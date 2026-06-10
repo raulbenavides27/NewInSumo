@@ -1,0 +1,11 @@
+{
+  "appId": "com.homeapp",
+  "appName": "homeapp",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

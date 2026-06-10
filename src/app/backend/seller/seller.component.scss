@@ -1,0 +1,69 @@
+.container-card {
+  --background: #dddddd;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.tabla-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.header-row {
+  font-weight: bold;
+}
+
+.seller-row {
+  margin-bottom: 10px;
+}
+
+.desktop-view {
+  display: block;
+}
+
+.mobile-view {
+  display: none;
+}
+
+ion-grid {
+  width: 100%;
+}
+
+ion-row {
+  align-items: center;
+}
+
+ion-col {
+  word-break: break-word;
+  font-size: 14px;
+}
+
+.mobile-card {
+  margin: 10px;
+}
+
+.mobile-card h2 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.mobile-card p {
+  margin: 5px 0;
+}
+
+@media screen and (max-width: 768px) {
+
+  .desktop-view {
+    display: none;
+  }
+
+  .mobile-view {
+    display: block;
+  }
+
+  ion-button {
+    font-size: 12px;
+  }
+
+}

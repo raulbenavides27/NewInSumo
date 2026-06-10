@@ -1,0 +1,56 @@
+.error-label {
+  color: red;
+  // font-size: 12px;
+  // margin-left: 5px;
+}
+input[type="file"] {
+  display: none;
+}
+
+//.error-label ion-icon {
+//  color: red; /* Cambia este color según tus preferencias */
+//  font-size: 12px;
+// margin-right: 5px;
+//}
+
+.imgUser {
+  margin: auto;
+  max-width: 150px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 30px;
+}
+ion-label {
+  margin: auto;
+}
+ion-input {
+  margin: auto;
+  background: rgba(70, 65, 69, 0.3);
+  border-radius: 5px;
+  color: white;
+}
+
+.bold_lbl {
+  margin: auto;
+  text-align: center;
+  color: black;
+  font-size: 18px;
+  display: block;
+}
+
+.small_lbl {
+  margin: auto;
+  text-align: center;
+  color: black;
+  font-size: 14px;
+}
+ion-col .small_lbl {
+  margin: auto;
+  text-align: center;
+  color: black;
+  font-size: 14px;
+}
+
+.custom-background {
+  background-color: #f6f6f6; /* Cambia este color por el gris deseado */
+}

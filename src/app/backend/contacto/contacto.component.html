@@ -1,0 +1,220 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Contacto</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="main_content_div">
+    <ion-card
+      *ngIf="P"
+      style="--background: #dddddd; max-width: 800px; margin: auto"
+    >
+      <ion-card-content style="max-width: 650px; margin: auto">
+        <ion-label class="bold_lbl">Agregar nuevo Contacto</ion-label>
+        <ion-item>
+          <ion-col size="auto">
+            <ion-label>{{ P.id_propiedad }}</ion-label>
+          </ion-col>
+        </ion-item>
+        <ion-item slot="header">
+          <ion-grid [fixed]="true">
+            <ion-row>
+              <ion-col size="auto">
+                <ion-icon name="home"></ion-icon>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-label>{{ P.tipo }}</ion-label>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-label>{{ P.numero }},</ion-label>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-label>{{ P.direccion }},</ion-label>
+              </ion-col>
+              <ion-col size="auto">
+                <ion-label>{{ P.comuna }}</ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item>
+          <ion-col size="auto">
+            <ion-label>Nombre</ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-input
+              [(ngModel)]="newContacto.nombre"
+              placeholder="Nombre"
+              name="name"
+              type="text"
+              inputmode="text"
+            >
+            </ion-input>
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="auto">
+            <ion-label>Apellido Paterno</ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-input
+              [(ngModel)]="newContacto.apellidop"
+              placeholder="Apellido paterno"
+              name="apellido paterno"
+              type="text"
+              inputmode="text"
+            ></ion-input>
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="auto">
+            <ion-label>Apellido Materno</ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-input
+              [(ngModel)]="newContacto.apellidom"
+              placeholder="Apellido materno"
+              name="apelllido materno"
+              type="text"
+              inputmode="text"
+            ></ion-input>
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="auto">
+            <ion-label>Telefono +56</ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-input
+              [(ngModel)]="newContacto.telefono"
+              placeholder="000000000"
+              type="phone"
+              inputmode="phone"
+            >
+            </ion-input>
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-col size="auto">
+            <ion-label>Rut</ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-input
+              [(ngModel)]="newContacto.rut"
+              placeholder="Rut"
+              name="rut"
+              type="text"
+              inputmode="text"
+            >
+            </ion-input>
+          </ion-col>
+        </ion-item>
+        <ion-item>
+          <ion-label>Tipo Contato</ion-label>
+          <ion-select
+            [(ngModel)]="newContacto.tipoContacto"
+            interface="popover"
+            placeholder="Arrendatario/Propietario"
+          >
+            <ion-select-option value="Arrendatario"
+              >Arrendatario</ion-select-option
+            >
+            <ion-select-option value="Propietario"
+              >Propietario</ion-select-option
+            >
+            <ion-select-option value="Otro Contacto">Otro</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Tipo razon</ion-label>
+          <ion-select
+            [(ngModel)]="newContacto.tipoEntidad"
+            interface="popover"
+            placeholder="Persona Natural/Empresa"
+            #c
+            (ionChange)="handleChange(c.value)"
+          >
+            <ion-select-option value="persona"
+              >Persona Natural</ion-select-option
+            >
+            <ion-select-option value="empresa">Empresa</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <p *ngIf="tiporazon == 'empresa'">
+          <ion-item>
+            <ion-col size="auto">
+              <ion-label>Giro</ion-label>
+            </ion-col>
+            <ion-col>
+              <ion-input
+                [(ngModel)]="newContacto.giro"
+                placeholder="Giro empresa"
+                name="giro"
+                type="text"
+                inputmode="text"
+              ></ion-input>
+            </ion-col>
+          </ion-item>
+          <ion-item>
+            <ion-col size="auto">
+              <ion-label>Correo</ion-label>
+            </ion-col>
+            <ion-col>
+              <ion-input
+                [(ngModel)]="newContacto.email"
+                placeholder="email"
+                name="mail"
+                type="email"
+                inputmode="text"
+              >
+              </ion-input>
+            </ion-col>
+          </ion-item>
+          <ion-item>
+            <ion-col size="auto">
+              <ion-label>Direccion</ion-label>
+            </ion-col>
+            <ion-col>
+              <ion-input
+                [(ngModel)]="newContacto.direccion"
+                placeholder="av. ejemplo"
+                type="text"
+                inputmode="text"
+              >
+              </ion-input>
+            </ion-col>
+          </ion-item>
+          <ion-item>
+            <ion-label>Tipo Cuenta </ion-label>
+            <ion-select
+              [(ngModel)]="newContacto.tipoServicio"
+              interface="popover"
+            >
+              <ion-select-option value="Agua">Agua</ion-select-option>
+              <ion-select-option value="Luz">Luz</ion-select-option>
+              <ion-select-option value="Gas">Gas</ion-select-option>
+              <ion-select-option value="Internet/Cable"
+                >Internet/cable</ion-select-option
+              >
+              <ion-select-option value="Arriendo">Arriendo</ion-select-option>
+              <ion-select-option value="Gastos Comunes"
+                >Gastos Comunes</ion-select-option
+              >
+            </ion-select>
+          </ion-item>
+        </p>
+        <ion-col>
+          <ion-button (click)="guardarContacto()" expand="block"
+            >Guardar</ion-button
+          >
+        </ion-col>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

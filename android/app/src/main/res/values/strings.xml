@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">InSumo</string>
+    <string name="title_activity_main">InSumo</string>
+    <string name="package_name">cl.insumo.app</string>
+    <string name="custom_url_scheme">cl.insumo.app</string>
+</resources>

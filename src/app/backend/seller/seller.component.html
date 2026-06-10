@@ -1,0 +1,328 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      Gestión Seller
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="main_content_div">
+
+    <ion-card class="container-card">
+
+      <ion-card-header>
+
+        <ion-button
+          *ngIf="enableLista"
+          (click)="nuevoSeller()">
+
+          <ion-icon name="add"></ion-icon>
+
+          <ion-label>
+            Nuevo Seller
+          </ion-label>
+
+        </ion-button>
+
+        <ion-button
+          color="danger"
+          *ngIf="enableNuevo"
+          (click)="cancelar()">
+
+          <ion-icon name="close"></ion-icon>
+
+          <ion-label>
+            Cancelar
+          </ion-label>
+
+        </ion-button>
+
+      </ion-card-header>
+
+      <!-- FORMULARIO -->
+
+      <ion-card-content *ngIf="enableNuevo">
+
+        <h2>
+
+          {{ editando ? 'Editar Seller' : 'Nuevo Seller' }}
+
+        </h2>
+
+        <ion-item *ngIf="editando">
+
+          <ion-label>
+
+            Fecha Creación
+
+          </ion-label>
+
+          <ion-note slot="end">
+
+            {{ newSeller.fechaCreacion | date:'dd/MM/yyyy' }}
+
+          </ion-note>
+
+        </ion-item>
+
+        <ion-item>
+
+          <ion-label position="stacked">
+
+            Nombre
+
+          </ion-label>
+
+          <ion-input
+            [(ngModel)]="newSeller.nombre">
+
+          </ion-input>
+
+        </ion-item>
+
+        <ion-item>
+
+          <ion-label position="stacked">
+
+            Código
+
+          </ion-label>
+
+          <ion-input
+            type="number"
+            [disabled]="newSeller.nombre.toUpperCase() === 'PARTICULAR'"
+            [(ngModel)]="newSeller.codigo">
+
+          </ion-input>
+
+        </ion-item>
+
+        <ion-item>
+
+          <ion-label position="stacked">
+
+            Observación
+
+          </ion-label>
+
+          <ion-input
+            [(ngModel)]="newSeller.observacion">
+
+          </ion-input>
+
+        </ion-item>
+
+        <ion-item>
+
+          <ion-label>
+
+            Estado
+
+          </ion-label>
+
+          <ion-select
+            [(ngModel)]="newSeller.estado">
+
+            <ion-select-option value="ACTIVO">
+              ACTIVO
+            </ion-select-option>
+
+            <ion-select-option value="INACTIVO">
+              INACTIVO
+            </ion-select-option>
+
+          </ion-select>
+
+        </ion-item>
+
+        <br>
+
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="guardarSeller()">
+
+          {{ editando ? 'Actualizar Seller' : 'Guardar Seller' }}
+
+        </ion-button>
+
+      </ion-card-content>
+
+      <!-- TABLA ESCRITORIO -->
+
+      <div
+        class="desktop-view"
+        *ngIf="enableLista">
+
+        <div class="tabla-container">
+
+          <ion-grid>
+
+            <ion-row class="header-row">
+
+              <ion-col size="2">ID</ion-col>
+              <ion-col size="2">NOMBRE</ion-col>
+              <ion-col size="1">CÓDIGO</ion-col>
+              <ion-col size="2">ESTADO</ion-col>
+              <ion-col size="2">OBSERVACIÓN</ion-col>
+              <ion-col size="2">FECHA</ion-col>
+              <ion-col size="1">OPCIÓN</ion-col>
+
+            </ion-row>
+
+          </ion-grid>
+
+          <ion-card
+            *ngFor="let seller of sellers"
+            class="seller-row">
+
+            <ion-grid>
+
+              <ion-row>
+
+                <ion-col size="2">
+
+                  <strong>{{ seller.id }}</strong>
+
+                </ion-col>
+
+                <ion-col size="2">
+
+                  {{ seller.nombre }}
+
+                </ion-col>
+
+                <ion-col size="1">
+
+                  {{ seller.codigo ?? '-' }}
+
+                </ion-col>
+
+                <ion-col size="2">
+
+                  <ion-select
+                    [(ngModel)]="seller.estado"
+                    (ionChange)="cambiarEstado(seller, seller.estado)">
+
+                    <ion-select-option value="ACTIVO">
+                      ACTIVO
+                    </ion-select-option>
+
+                    <ion-select-option value="INACTIVO">
+                      INACTIVO
+                    </ion-select-option>
+
+                  </ion-select>
+
+                </ion-col>
+
+                <ion-col size="2">
+
+                  {{ seller.observacion }}
+
+                </ion-col>
+
+                <ion-col size="2">
+
+                  {{ seller.fechaCreacion | date:'dd/MM/yy' }}
+
+                </ion-col>
+
+                <ion-col size="1">
+
+                  <ion-button
+                    size="small"
+                    color="warning"
+                    (click)="editarSeller(seller)">
+
+                    Editar
+
+                  </ion-button>
+
+                </ion-col>
+
+              </ion-row>
+
+            </ion-grid>
+
+          </ion-card>
+
+        </div>
+
+      </div>
+
+      <!-- TARJETAS MÓVIL -->
+
+      <div
+        class="mobile-view"
+        *ngIf="enableLista">
+
+        <ion-card
+          *ngFor="let seller of sellers"
+          class="mobile-card">
+
+          <ion-card-content>
+
+            <h2>
+
+              {{ seller.nombre }}
+
+            </h2>
+
+            <p>
+
+              <strong>ID:</strong>
+              {{ seller.id }}
+
+            </p>
+
+            <p>
+
+              <strong>Código:</strong>
+              {{ seller.codigo ?? '-' }}
+
+            </p>
+
+            <p>
+
+              <strong>Estado:</strong>
+              {{ seller.estado }}
+
+            </p>
+
+            <p>
+
+              <strong>Observación:</strong>
+              {{ seller.observacion }}
+
+            </p>
+
+            <p>
+
+              <strong>Fecha:</strong>
+              {{ seller.fechaCreacion | date:'dd/MM/yy' }}
+
+            </p>
+
+            <ion-button
+              expand="block"
+              color="warning"
+              (click)="editarSeller(seller)">
+
+              Editar
+
+            </ion-button>
+
+          </ion-card-content>
+
+        </ion-card>
+
+      </div>
+
+    </ion-card>
+
+  </div>
+
+</ion-content>

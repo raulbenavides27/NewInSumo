@@ -38,8 +38,8 @@ export interface Entidad {
   apellidom: string;
   rut: string;
   tipoContacto: string;
-  tipoEntidad: string; // Persona natural / empresa
-  giro: string; // Solo para empresas
+  tipoEntidad: string;
+  giro: string;
   email: string;
   direccion: string;
   telefono: string;
@@ -119,25 +119,39 @@ export interface Seller {
   estado: 'ACTIVO' | 'INACTIVO';
   fechaCreacion: Date;
 }
-export interface Itd {
 
+/* =====================================================
+   ITD
+===================================================== */
+
+export interface Itd {
   id: string;
 
+  folio: number;
+
   fechaCreacion: Date;
+
+  fechaDeclarada: Date;
 
   sellerId: string;
 
   sellerNombre: string;
 
+  sellerCodigo: number | null;
+
   ocPedido: string;
 
   documento: string;
+
+  numeroSeguimiento: string;
 
   sku: string;
 
   descripcion: string;
 
   cantidad: number;
+
+  detalleEstado: string;
 
   estadoProducto:
     | 'BUEN_ESTADO'
@@ -148,9 +162,14 @@ export interface Itd {
 
   cargoCreacion: string;
 
+  fotos: string[];
 }
-export interface HistorialItd {
 
+/* =====================================================
+   HISTORIAL ITD
+===================================================== */
+
+export interface HistorialItd {
   id: string;
 
   itdId: string;
@@ -164,5 +183,4 @@ export interface HistorialItd {
   responsableGestion: string;
 
   cargoGestion: string;
-
 }

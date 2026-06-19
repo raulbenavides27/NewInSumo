@@ -36,12 +36,12 @@ ion-toolbar {
 }
 
 ion-item {
-  --background: #f6f6f6;
+  --background: transparent;
 }
 ion-card {
-  --background: #dddddd;
+  --background: white;
+  border-radius: 12px;
 }
-
 ion-slides {
   margin-bottom: 50px;
 }
@@ -68,10 +68,10 @@ ion-buttons {
   align-items: center;
 }
 ion-input {
-  margin: auto;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
-  color: rgb(2, 2, 2);
+  --background: white;
+  --color: black;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
   ion-icon {
     margin-left: 10px;
     color: rgb(17, 16, 16);
@@ -91,4 +91,21 @@ ion-input {
   text-align: center;
   color: black;
   font-size: 14px;
+}
+ion-select {
+  --background: white;
+  --color: black;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+}
+ion-textarea {
+  --background: white;
+  --color: black;
+  border: 1px solid #d6d6d6;
+  border-radius: 8px;
+}
+ion-label {
+  color: black;
+  font-weight: 600;
+
 }

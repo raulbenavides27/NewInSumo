@@ -1,299 +1,397 @@
-<ion-header class="ion-no-border">
+<ion-header class="ion-no-border" mode="md">
+
   <ion-toolbar>
-    <ion-title>
-      Nuevo ITD
-    </ion-title>
+
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-input
+      type="text"
+      placeholder="Buscar"
+      [(ngModel)]="searchTerm">
+    </ion-input>
+
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end" (click)="goPerfil()">
+      <ion-button>
+        <ion-icon
+          slot="icon-only"
+          name="person-circle">
+        </ion-icon>
+      </ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
+
 </ion-header>
 
 <ion-content>
 
-  <ion-card class="container-card">
+  <div class="main_content_div">
+    <ion-card >
 
-    <ion-card-header>
+      <ion-card-header>
 
-      <ion-card-title>
-        Ingreso ITD
-      </ion-card-title>
+        <ion-button>
+          INGRESO ITD
+        </ion-button>
 
-    </ion-card-header>
+      </ion-card-header>
 
-    <ion-card-content>
+      <ion-card-content>
 
-      <!-- FECHA -->
-      <ion-col size="2">
-        <ion-row >
-      <ion-item>
+        <!-- DATOS GENERALES -->
 
-        <ion-label position="stacked">
-          Fecha Declarada
-        </ion-label>
+        <ion-grid>
 
-        <ion-input
-          type="date"
-          [(ngModel)]="itd.fechaDeclarada">
-        </ion-input>
+          <!-- FILA 1 -->
 
-      </ion-item>
+          <ion-row>
+
+            <ion-col size="6">
+
+              <ion-label>
+                Fecha
+              </ion-label>
+
+              <ion-input
+                type="date"
+                [(ngModel)]="itd.fechaDeclarada">
+              </ion-input>
+
+            </ion-col>
+
+            <ion-col size="6">
+
+              <ion-label>
+                ITD
+              </ion-label>
+
+              <ion-input
+                readonly
+                [(ngModel)]="itd.folio">
+              </ion-input>
+
+            </ion-col>
+
+          </ion-row>
+
+          <!-- FILA 2 -->
+
+          <ion-row>
+
+            <ion-col size="4">
+
+              <ion-label>
+                N° Factura / Boleta
+              </ion-label>
+
+              <ion-input
+                type="number"
+                [(ngModel)]="itd.documento">
+              </ion-input>
+
+            </ion-col>
+
+            <ion-col size="4">
+
+              <ion-label>
+                Seller
+              </ion-label>
+
+              <ion-select
+                [(ngModel)]="itd.sellerId"
+                (ionChange)="seleccionarSellerHtml()">
+
+                <ion-select-option
+                  *ngFor="let seller of sellers"
+                  [value]="seller.id">
+
+                  {{ seller.nombre }}
+
+                </ion-select-option>
+
+              </ion-select>
+
+            </ion-col>
+
+            <ion-col size="4">
+
+              <ion-label>
+                Código Seller
+              </ion-label>
+
+              <ion-input
+                readonly
+                [(ngModel)]="itd.sellerCodigo">
+              </ion-input>
+
+            </ion-col>
+
+          </ion-row>
+
+          <!-- FILA 3 -->
+
+          <ion-row>
+
+            <ion-col size="6">
+
+              <ion-label>
+                OC / Pedido
+              </ion-label>
+
+              <ion-input
+                [(ngModel)]="itd.ocPedido">
+              </ion-input>
+
+            </ion-col>
+
+            <ion-col size="6">
+
+              <ion-label>
+                N° Seguimiento
+              </ion-label>
+
+              <ion-input
+                [(ngModel)]="itd.numeroSeguimiento">
+              </ion-input>
+
+            </ion-col>
+
+          </ion-row>
+
+        </ion-grid>
+
+        <!-- PRODUCTOS -->
+
+        <ion-row>
+
+          <ion-col>
+
+            <h2>Productos</h2>
+
+          </ion-col>
+
+          <ion-col size="auto">
+
+            <ion-button
+              color="success"
+              (click)="agregarProducto()">
+
+              Agregar Producto
+
+            </ion-button>
+
+          </ion-col>
+
         </ion-row>
-      <!-- FOLIO -->
-<ion-row>
-      <ion-item>
 
-        <ion-label position="stacked">
-          Folio
-        </ion-label>
+        <ion-grid>
 
-        <ion-input
-          type="number"
-          [(ngModel)]="itd.folio">
-        </ion-input>
+          <!-- CABECERA -->
 
-      </ion-item>
-    </ion-row>
-      </ion-col>
-<ion-col size="2">
-      <!-- SELLER -->
-      <ion-row >
-      <ion-item>
-        <ion-label position="stacked">
-          Seller
-        </ion-label>
+          <ion-row>
 
-        <ion-select
-          (ionChange)="seleccionarSeller($event)">
+            <ion-col size="2">
+              <strong>SKU</strong>
+            </ion-col>
 
-          <ion-select-option
-            *ngFor="let seller of sellers"
-            [value]="seller.id">
+            <ion-col size="5">
+              <strong>Descripción</strong>
+            </ion-col>
 
-            {{ seller.nombre }}
+            <ion-col size="2">
+              <strong>Cantidad</strong>
+            </ion-col>
 
-          </ion-select-option>
+            <ion-col size="2">
+              <strong>Estado</strong>
+            </ion-col>
 
-        </ion-select>
+            <ion-col size="1">
+            </ion-col>
 
-      </ion-item>
-      </ion-row>
-      <!-- CODIGO SELLER -->
-      <ion-row>
-      <ion-item>
+          </ion-row>
 
-        <ion-label position="stacked">
-          Código Seller
-        </ion-label>
+          <!-- DETALLE -->
 
-        <ion-input
-          [readonly]="true"
-          [(ngModel)]="itd.sellerCodigo">
-        </ion-input>
+          <ion-row
+            *ngFor="let producto of itd.productos; let i=index">
 
-      </ion-item> 
-    </ion-row>
-  </ion-col>
-      <!-- DOCUMENTO -->
+            <ion-col size="2">
 
-      <ion-item>
+              <ion-input
+                [(ngModel)]="producto.sku">
+              </ion-input>
 
-        <ion-label position="stacked">
-          Documento
-        </ion-label>
+            </ion-col>
 
-        <ion-input
-          [(ngModel)]="itd.documento">
-        </ion-input>
+            <ion-col size="5">
 
-      </ion-item>
+              <ion-input
+                [(ngModel)]="producto.descripcion">
+              </ion-input>
 
-      <!-- OC / PEDIDO -->
+            </ion-col>
 
-      <ion-item>
+            <ion-col size="2">
 
-        <ion-label position="stacked">
-          OC / Pedido
-        </ion-label>
+              <ion-input
+                type="number"
+                [(ngModel)]="producto.cantidad">
+              </ion-input>
 
-        <ion-input
-          [(ngModel)]="itd.ocPedido">
-        </ion-input>
+            </ion-col>
 
-      </ion-item>
+            <ion-col size="2">
 
-      <!-- SEGUIMIENTO -->
+              <ion-select
+                [(ngModel)]="producto.estadoProducto">
 
-      <ion-item>
+                <ion-select-option value="BUEN_ESTADO">
+                  Bueno
+                </ion-select-option>
 
-        <ion-label position="stacked">
-          Número Seguimiento
-        </ion-label>
+                <ion-select-option value="RECUPERABLE">
+                  Recuperable
+                </ion-select-option>
 
-        <ion-input
-          [(ngModel)]="itd.numeroSeguimiento">
-        </ion-input>
+                <ion-select-option value="MAL_ESTADO">
+                  Malo
+                </ion-select-option>
 
-      </ion-item>
+              </ion-select>
 
-      <!-- SKU -->
+            </ion-col>
 
-      <ion-item>
+            <ion-col size="1">
 
-        <ion-label position="stacked">
-          SKU
-        </ion-label>
+              <ion-button
+                fill="clear"
+                color="danger"
+                (click)="eliminarProducto(i)">
 
-        <ion-input
-          [(ngModel)]="itd.sku">
-        </ion-input>
+                <ion-icon
+                  name="trash">
+                </ion-icon>
 
-      </ion-item>
+              </ion-button>
 
-      <!-- DESCRIPCION -->
+            </ion-col>
 
-      <ion-item>
+          </ion-row>
 
-        <ion-label position="stacked">
-          Descripción
-        </ion-label>
+        </ion-grid>
 
-        <ion-textarea
-          autoGrow="true"
-          [(ngModel)]="itd.descripcion">
-        </ion-textarea>
+        <!-- DETALLE ESTADO -->
 
-      </ion-item>
-
-      <!-- CANTIDAD -->
-
-      <ion-item>
-
-        <ion-label position="stacked">
-          Cantidad
-        </ion-label>
-
-        <ion-input
-          type="number"
-          [(ngModel)]="itd.cantidad">
-        </ion-input>
-
-      </ion-item>
-
-      <!-- ESTADO PRODUCTO -->
-
-      <ion-item>
-
-        <ion-label position="stacked">
-          Estado Producto
-        </ion-label>
-
-        <ion-select
-          [(ngModel)]="itd.estadoProducto">
-
-          <ion-select-option value="BUEN_ESTADO">
-            Buen Estado
-          </ion-select-option>
-
-          <ion-select-option value="RECUPERABLE">
-            Recuperable
-          </ion-select-option>
-
-          <ion-select-option value="MAL_ESTADO">
-            Mal Estado
-          </ion-select-option>
-
-        </ion-select>
-
-      </ion-item>
-
-      <!-- DETALLE ESTADO -->
-
-      <ion-item>
-
-        <ion-label position="stacked">
-          Detalle Estado
-        </ion-label>
-
-        <ion-textarea
-          autoGrow="true"
-          [(ngModel)]="itd.detalleEstado">
-        </ion-textarea>
-
-      </ion-item>
-
-      <!-- RESPONSABLE -->
-
-      <ion-item>
-
-        <ion-label position="stacked">
-          Responsable Creación
-        </ion-label>
-
-        <ion-input
-          [(ngModel)]="itd.responsableCreacion">
-        </ion-input>
-
-      </ion-item>
-
-      <!-- CARGO -->
-
-      <ion-item>
-
-        <ion-label position="stacked">
-          Cargo
-        </ion-label>
-
-        <ion-input
-          [(ngModel)]="itd.cargoCreacion">
-        </ion-input>
-
-      </ion-item>
-
-      <!-- FOTOS -->
-
-      <ion-item>
-
-        <ion-label position="stacked">
-          Adjuntar Fotografías
-        </ion-label>
-
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          (change)="agregarFoto($event)"
-        />
-
-      </ion-item>
-
-      <ion-list *ngIf="itd.fotos.length > 0">
-
-        <ion-item *ngFor="let foto of itd.fotos">
-
-          {{ foto }}
+        <ion-item>
+
+          <ion-label position="stacked">
+            Detalle Estado
+          </ion-label>
+
+          <ion-textarea
+            autoGrow="true"
+            [(ngModel)]="itd.detalleEstado">
+          </ion-textarea>
 
         </ion-item>
 
-      </ion-list>
+        <!-- FOTOS -->
 
-      <ion-button
-        expand="block"
-        color="success"
-        (click)="guardarITD()">
+        <ion-item>
 
-        Guardar ITD
+          <ion-label position="stacked">
+            Adjuntar Fotografías
+          </ion-label>
 
-      </ion-button>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            capture="environment"
+            (change)="agregarFoto($event)">
 
-      <ion-button
-        expand="block"
-        color="medium"
-        (click)="cancelar()">
+        </ion-item>
 
-        Limpiar Formulario
+        <ion-list *ngIf="itd.fotos.length > 0">
 
-      </ion-button>
+          <ion-item
+            *ngFor="let foto of itd.fotos">
 
-    </ion-card-content>
+            {{ foto }}
 
-  </ion-card>
+          </ion-item>
+
+        </ion-list>
+
+        <!-- RESPONSABLE -->
+
+        <ion-grid>
+
+          <ion-row>
+
+            <ion-col size="6">
+
+              <ion-label>
+                Responsable
+              </ion-label>
+
+              <ion-input
+                readonly
+                [(ngModel)]="itd.responsableCreacion">
+              </ion-input>
+
+            </ion-col>
+
+            <ion-col size="6">
+
+              <ion-label>
+                Cargo
+              </ion-label>
+
+              <ion-input
+                readonly
+                [(ngModel)]="itd.cargoCreacion">
+              </ion-input>
+
+            </ion-col>
+
+          </ion-row>
+
+        </ion-grid>
+
+        <br>
+
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="guardarITD()">
+
+          Guardar ITD
+
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          color="medium"
+          (click)="cancelar()">
+
+          Limpiar Formulario
+
+        </ion-button>
+
+      </ion-card-content>
+
+    </ion-card>
+
+  </div>
 
 </ion-content>

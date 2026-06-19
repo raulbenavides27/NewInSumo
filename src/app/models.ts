@@ -121,6 +121,23 @@ export interface Seller {
 }
 
 /* =====================================================
+   ITD PRODUCTO
+===================================================== */
+
+export interface ItdProducto {
+  sku: string;
+
+  descripcion: string;
+
+  cantidad: number;
+
+  estadoProducto:
+    | 'BUEN_ESTADO'
+    | 'RECUPERABLE'
+    | 'MAL_ESTADO';
+}
+
+/* =====================================================
    ITD
 ===================================================== */
 
@@ -139,30 +156,21 @@ export interface Itd {
 
   sellerCodigo: number | null;
 
-  ocPedido: string;
-
   documento: string;
+
+  ocPedido: string;
 
   numeroSeguimiento: string;
 
-  sku: string;
-
-  descripcion: string;
-
-  cantidad: number;
-
   detalleEstado: string;
-
-  estadoProducto:
-    | 'BUEN_ESTADO'
-    | 'RECUPERABLE'
-    | 'MAL_ESTADO';
 
   responsableCreacion: string;
 
   cargoCreacion: string;
 
   fotos: string[];
+
+  productos: ItdProducto[];
 }
 
 /* =====================================================

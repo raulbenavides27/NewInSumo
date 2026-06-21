@@ -1,24 +1,34 @@
-<ion-header class="ion-no-border" mode="md">
+<ion-header>
+
   <ion-toolbar>
+
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
+
     <ion-input
       type="text"
       placeholder="Buscar"
-      [(ngModel)]="searchTerm"
-    ></ion-input>
+      [(ngModel)]="searchTerm">
+    </ion-input>
+
     <ion-buttons slot="end">
-      <ion-button (click)="filterProperties()">
+      <ion-button>
         <ion-icon name="search-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons (click)="goPerfil()" slot="end">
+
+    <ion-buttons slot="end" (click)="goPerfil()">
       <ion-button>
-        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+        <ion-icon
+          slot="icon-only"
+          name="person-circle">
+        </ion-icon>
       </ion-button>
     </ion-buttons>
+
   </ion-toolbar>
+
 </ion-header>
 
 <ion-content>

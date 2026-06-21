@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { Seller } from 'src/app/models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-seller',
@@ -12,7 +13,7 @@ export class SellerComponent implements OnInit {
   enableLista: boolean = true;
   enableNuevo: boolean = false;
   editando: boolean = false;
-
+  searchTerm: string = '';
   sellers: Seller[] = [];
 
   newSeller: Seller = {
@@ -24,8 +25,10 @@ export class SellerComponent implements OnInit {
     fechaCreacion: new Date()
   };
 
+
   constructor(
-    private alertController: AlertController
+    private alertController: AlertController,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -72,6 +75,9 @@ export class SellerComponent implements OnInit {
       fechaCreacion: new Date()
     };
 
+  }
+    goPerfil() {
+    this.router.navigate(['perfil']);
   }
 
   nuevoSeller(): void {

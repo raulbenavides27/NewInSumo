@@ -210,21 +210,65 @@ export class SetItdComponent implements OnInit {
 
   }
 
-  guardarITD() {
+guardarITD() {
 
-    console.log(
-      'ITD COMPLETO'
-    );
+  if (!this.validarFormulario()) {
+    return;
+  }
 
-    console.log(this.itd);
+  console.log(this.itd);
 
-    alert(
-      'ITD registrado correctamente'
-    );
+  alert('ITD registrado correctamente');
 
-    this.cancelar();
+  this.cancelar();
+
+}
+  validarFormulario(): boolean {
+
+  if (!this.itd.fechaDeclarada) {
+    alert('Debe ingresar la fecha.');
+    return false;
+  }
+
+  if (!this.itd.documento?.toString().trim()) {
+    alert('Debe ingresar el número de documento.');
+    return false;
+  }
+
+  if (!this.itd.sellerId) {
+    alert('Debe seleccionar un Seller.');
+    return false;
+  }
+
+  if (!this.itd.ocPedido?.trim()) {
+    alert('Debe ingresar la OC o Pedido.');
+    return false;
+  }
+
+  for (let i = 0; i < this.itd.productos.length; i++) {
+
+    const producto = this.itd.productos[i];
+
+    if (!producto.sku.trim()) {
+      alert(`Debe ingresar el SKU del producto ${i + 1}.`);
+      return false;
+    }
+
+    if (!producto.descripcion.trim()) {
+      alert(`Debe ingresar la descripción del producto ${i + 1}.`);
+      return false;
+    }
+
+    if (!producto.cantidad || producto.cantidad <= 0) {
+      alert(`La cantidad del producto ${i + 1} debe ser mayor que cero.`);
+      return false;
+    }
 
   }
+
+  return true;
+
+}
 
   cancelar() {
 

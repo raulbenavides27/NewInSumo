@@ -5,7 +5,6 @@ import {
   Seller
 } from 'src/app/models';
 import { FirestoreService } from 'src/app/services/firestore.service';
-import { Cliente, Cuentas, Entidad, Gastos, Propiedad } from 'src/app/models';
 import { FirestorageService } from 'src/app/services/firestorage.service';
 import { Router } from '@angular/router';
 import { FirebaseauthService } from 'src/app/services/firebaseauth.service';
@@ -120,9 +119,7 @@ export class SetItdComponent implements OnInit {
 
   }
 
- go() {
-    this.router.navigate(['cuentas']);
-  }
+ 
   goPerfil() {
     this.router.navigate(['perfil']);
   }

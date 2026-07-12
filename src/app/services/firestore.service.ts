@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import { Propiedad } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirestoreService {
-  seletPropiedad!: Propiedad;
+  
 
   constructor(public database: AngularFirestore) {}
 
@@ -55,12 +54,8 @@ export class FirestoreService {
     return collection.valueChanges();
   }
 
-  // Seleccionar propiedad (para flujo interno)
-  setDoc(propiedad: Propiedad) {
-    this.seletPropiedad = propiedad;
-  }
 
-  getProp() {
-    return this.seletPropiedad;
-  }
+ 
+
+
 }

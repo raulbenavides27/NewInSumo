@@ -2,60 +2,87 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FirestoreService {
-  
 
-  constructor(public database: AngularFirestore) {}
+  constructor(
+    private readonly database: AngularFirestore
+  ) {}
 
-  // Crear documento con ID personalizado
-  creatDoc<T extends firebase.firestore.DocumentData>(
+  /**
+   * Crear documento con ID personalizado.
+   */
+  createDoc<T extends firebase.firestore.DocumentData>(
     data: T,
     path: string,
-    id: string,
-  ) {
-    const collection = this.database.collection<T>(path);
-    return collection.doc(id).set(data);
+    id: string
+  ): Promise<void> {
+    return this.database
+      .collection<T>(path)
+      .doc(id)
+      .set(data);
   }
 
-  // Obtener un documento por ID
-  getDoc<T extends firebase.firestore.DocumentData>(path: string, id: string) {
-    const collection = this.database.collection<T>(path);
-    return collection.doc(id).valueChanges();
+  /**
+   * Obtener documento por ID.
+   */
+  getDoc<T extends firebase.firestore.DocumentData>(
+    path: string,
+    id: string
+  ): Observable<T | undefined> {
+    return this.database
+      .collection<T>(path)
+      .doc(id)
+      .valueChanges();
   }
 
-  // Eliminar un documento
-  deletDoc(path: string, id: string) {
-    const collection = this.database.collection(path);
-    return collection.doc(id).delete();
-  }
-
-  // Actualizar un documento
+  /**
+   * Actualizar documento.
+   */
   updateDoc<T extends firebase.firestore.DocumentData>(
     data: Partial<T>,
     path: string,
-    id: string,
-  ) {
-    const collection = this.database.collection<T>(path);
-    return collection.doc(id).update(data);
+    id: string
+  ): Promise<void> {
+    return this.database
+      .collection<T>(path)
+      .doc(id)
+      .update(data);
   }
 
-  // Obtener ID generado automáticamente
-  getId() {
+  /**
+   * Eliminar documento.
+   */
+  deleteDoc(
+    path: string,
+    id: string
+  ): Promise<void> {
+    return this.database
+      .collection(path)
+      .doc(id)
+      .delete();
+  }
+
+  /**
+   * Obtener todos los documentos de una colección.
+   */
+  getCollection<T extends firebase.firestore.DocumentData>(
+    path: string
+  ): Observable<T[]> {
+    return this.database
+      .collection<T>(path)
+      .valueChanges();
+  }
+
+  /**
+   * Generar ID de Firestore.
+   */
+  getId(): string {
     return this.database.createId();
   }
-
-  // Obtener todos los documentos de una colección
-  getColletion<T extends firebase.firestore.DocumentData>(path: string) {
-    const collection = this.database.collection<T>(path);
-    return collection.valueChanges();
-  }
-
-
- 
-
 
 }

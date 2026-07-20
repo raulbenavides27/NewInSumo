@@ -7,12 +7,13 @@ import { SetItdComponent } from './backend/set-itd/set-itd.component';
 
 
 import { SellerComponent } from './backend/seller/seller.component';
-import { SetSellerComponent } from './backend/set-seller/set-seller.component';
 
 
 import { AllItdComponent } from './backend/all-itd/all-itd.component';
 
 import { AuthGuard } from './guards/auth.guard';
+import { PerfilComponent } from './pages/perfil/perfil.component';
+import { HomeComponent } from './pages/home/home.component';
 
 const routes: Routes = [
 
@@ -47,15 +48,15 @@ const routes: Routes = [
     component: SellerComponent,
     canActivate: [AuthGuard]
   },
-
   {
-    path: 'set-seller',
-    component: SetSellerComponent,
-    canActivate: [AuthGuard]
-  },
- 
-
-
+  path: 'perfil',
+  component: PerfilComponent
+},
+{
+  path: 'home',
+  component: HomeComponent,
+  canActivate: [AuthGuard]
+},
   {
     path: '**',
     redirectTo: ''

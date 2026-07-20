@@ -3,7 +3,7 @@ import {
   Itd,
   ItdProducto,
   Seller
-} from 'src/app/models';
+} from 'src/app/models/models';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { FirestorageService } from 'src/app/services/firestorage.service';
 import { Router } from '@angular/router';

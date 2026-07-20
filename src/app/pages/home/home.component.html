@@ -1,0 +1,66 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>
+      NewInSumo ERP
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="goPerfil()">
+        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="main_content_div">
+
+    <div class="logo">
+      <img src="assets/imgs/logo.png">
+    </div>
+
+    <ion-label class="simple_lbl">
+      Bienvenido a NewInSumo ERP
+    </ion-label>
+
+    <ion-label class="simple_lbl">
+      Selecciona una opción para comenzar.
+    </ion-label>
+
+    <ion-button
+      expand="block"
+      color="primary"
+      (click)="goCrearItd()">
+
+      Registrar ITD
+
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      color="success"
+      (click)="goHistorial()">
+
+      Historial ITD
+
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      color="warning"
+      (click)="goSeller()">
+
+      Sellers
+
+    </ion-button>
+
+  </div>
+
+</ion-content>

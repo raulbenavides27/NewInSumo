@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { Itd } from '../models';
+import { Itd } from '../models/models';
 import { FirestoreService } from './firestore.service';
 
 @Injectable({

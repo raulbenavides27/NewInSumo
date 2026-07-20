@@ -7,7 +7,6 @@ import { RouterModule } from '@angular/router';
 import { SetItdComponent } from './set-itd/set-itd.component';
 
 import { SellerComponent } from './seller/seller.component';
-import { SetSellerComponent } from './set-seller/set-seller.component';
 import { AllItdComponent } from './all-itd/all-itd.component';
 
 @NgModule({
@@ -16,7 +15,6 @@ import { AllItdComponent } from './all-itd/all-itd.component';
     SetItdComponent,
 
     SellerComponent,
-    SetSellerComponent,
     AllItdComponent
   ],
   imports: [

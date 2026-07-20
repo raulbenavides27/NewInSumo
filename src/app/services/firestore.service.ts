@@ -75,14 +75,35 @@ export class FirestoreService {
   ): Observable<T[]> {
     return this.database
       .collection<T>(path)
-      .valueChanges();
+      .valueChanges({ idField: 'id' });
   }
 
   /**
-   * Generar ID de Firestore.
+   * Generar ID aleatorio de Firestore.
    */
   getId(): string {
     return this.database.createId();
+  }
+
+  /**
+   * Ejecuta una transacción de Firestore.
+   * Permite realizar operaciones atómicas
+   * como generar correlativos consecutivos.
+   */
+  runTransaction<T>(
+    transactionFunction: (
+      transaction: firebase.firestore.Transaction
+    ) => Promise<T>
+  ): Promise<T> {
+
+    return this.database.firestore.runTransaction(
+      async (transaction) => {
+
+        return await transactionFunction(transaction);
+
+      }
+    );
+
   }
 
 }

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { Seller } from 'src/app/models';
 import { Router } from '@angular/router';
+
+import { Seller } from 'src/app/models/models';
+import { SellerService } from 'src/app/services/seller.service';
 
 @Component({
   selector: 'app-seller',
@@ -10,75 +12,53 @@ import { Router } from '@angular/router';
 })
 export class SellerComponent implements OnInit {
 
-  enableLista: boolean = true;
-  enableNuevo: boolean = false;
-  editando: boolean = false;
-  searchTerm: string = '';
+  // ===========================
+  // Propiedades
+  // ===========================
+
+  enableLista = true;
+  enableNuevo = false;
+  editando = false;
+
+  searchTerm = '';
+
   sellers: Seller[] = [];
 
-  newSeller: Seller = {
-    id: '',
-    nombre: '',
-    codigo: null,
-    observacion: '',
-    estado: 'ACTIVO',
-    fechaCreacion: new Date()
-  };
+  newSeller: Seller = this.getSellerVacio();
 
+  // ===========================
+  // Constructor
+  // ===========================
 
   constructor(
-    private alertController: AlertController,
-    private router: Router
+    private readonly sellerService: SellerService,
+    private readonly alertController: AlertController,
+    private readonly router: Router
   ) {}
+
+  // ===========================
+  // Lifecycle
+  // ===========================
 
   ngOnInit(): void {
 
-    // DATOS DE PRUEBA
-
-    this.sellers = [
-      {
-        id: 'SEL0000',
-        nombre: 'PARTICULAR',
-        codigo: null,
-        observacion: 'INGRESO MANUAL',
-        estado: 'ACTIVO',
-        fechaCreacion: new Date()
-      },
-      {
-        id: 'SEL0001',
-        nombre: 'RIPLEY MKP',
-        codigo: 4030,
-        observacion: 'SOLO FACTURAS',
-        estado: 'ACTIVO',
-        fechaCreacion: new Date()
-      },
-      {
-        id: 'SEL0002',
-        nombre: 'WALMART MKP',
-        codigo: 4014,
-        observacion: 'SOLO FACTURAS',
-        estado: 'ACTIVO',
-        fechaCreacion: new Date()
-      }
-    ];
+    this.cargarSellers();
 
   }
 
-  getSellerVacio(): Seller {
+  // ===========================
+  // Navegación
+  // ===========================
 
-    return {
-      id: '',
-      nombre: '',
-      codigo: null,
-      observacion: '',
-      estado: 'ACTIVO',
-      fechaCreacion: new Date()
-    };
+  goPerfil(): void {
 
-  }
-    goPerfil() {
     this.router.navigate(['perfil']);
+
   }
+
+  // ===========================
+  // Métodos públicos
+  // ===========================
 
   nuevoSeller(): void {
 
@@ -96,62 +76,9 @@ export class SellerComponent implements OnInit {
     this.enableLista = true;
     this.enableNuevo = false;
 
+    this.editando = false;
+
     this.newSeller = this.getSellerVacio();
-
-  }
-
-  generarId(): string {
-
-    const numero = this.sellers.length + 1;
-
-    return 'SEL' + ('0000' + numero).slice(-4);
-
-  }
-
-  guardarSeller(): void {
-
-    if (this.newSeller.nombre.trim() === '') {
-      alert('Debe ingresar un nombre');
-      return;
-    }
-
-    if (
-      this.newSeller.nombre.toUpperCase() === 'PARTICULAR'
-    ) {
-      this.newSeller.codigo = null;
-    }
-
-    if (!this.editando) {
-
-      this.newSeller.id = this.generarId();
-
-      this.newSeller.fechaCreacion = new Date();
-
-      this.sellers.push({
-        ...this.newSeller
-      });
-
-    } else {
-
-      const index = this.sellers.findIndex(
-        seller => seller.id === this.newSeller.id
-      );
-
-      if (index >= 0) {
-
-        const fechaOriginal =
-          this.sellers[index].fechaCreacion;
-
-        this.sellers[index] = {
-          ...this.newSeller,
-          fechaCreacion: fechaOriginal
-        };
-
-      }
-
-    }
-
-    this.cancelar();
 
   }
 
@@ -168,46 +95,159 @@ export class SellerComponent implements OnInit {
 
   }
 
+  async guardarSeller(): Promise<void> {
+
+    try {
+
+      if (this.editando) {
+
+        await this.sellerService.update(
+          this.newSeller
+        );
+
+      } else {
+
+        await this.sellerService.create(
+          this.newSeller
+        );
+
+      }
+
+      this.cancelar();
+
+      await this.showMessage(
+        'Correcto',
+        'Seller guardado correctamente.'
+      );
+
+    } catch (error: any) {
+
+      console.error(error);
+
+      await this.showMessage(
+        'Error',
+        error?.message ??
+        'No fue posible guardar el Seller.'
+      );
+
+    }
+
+  }
+
   async cambiarEstado(
     seller: Seller,
     nuevoEstado: 'ACTIVO' | 'INACTIVO'
   ): Promise<void> {
 
-    const estadoAnterior = seller.estado;
-
     const alert = await this.alertController.create({
 
       header: 'Confirmar',
 
-      message:
-        '¿Desea cambiar el estado del Seller?',
+      message: '¿Desea cambiar el estado del Seller?',
 
       buttons: [
 
         {
           text: 'Cancelar',
-          role: 'cancel',
-
-          handler: () => {
-
-            seller.estado = estadoAnterior;
-
-          }
-
+          role: 'cancel'
         },
 
         {
           text: 'Aceptar',
 
-          handler: () => {
+          handler: async () => {
 
-            seller.estado = nuevoEstado;
+            try {
+
+              await this.sellerService.changeStatus(
+                seller,
+                nuevoEstado
+              );
+
+            } catch (error) {
+
+              console.error(error);
+
+              await this.showMessage(
+                'Error',
+                'No fue posible cambiar el estado.'
+              );
+
+            }
 
           }
 
         }
 
       ]
+
+    });
+
+    await alert.present();
+
+  }
+
+  // ===========================
+  // Métodos privados
+  // ===========================
+
+  private cargarSellers(): void {
+
+    this.sellerService
+      .getAll()
+      .subscribe({
+
+        next: sellers => {
+
+          this.sellers = sellers;
+
+        },
+
+        error: async () => {
+
+          await this.showMessage(
+            'Error',
+            'No fue posible cargar los Sellers.'
+          );
+
+        }
+
+      });
+
+  }
+
+  private getSellerVacio(): Seller {
+
+    return {
+
+      id: '',
+
+      nombre: '',
+
+      codigo: null,
+
+      observacion: '',
+
+      estado: 'ACTIVO',
+
+      fechaCreacion: new Date()
+
+    };
+
+  }
+
+  private async showMessage(
+    header: string,
+    message: string
+  ): Promise<void> {
+
+    const alert = await this.alertController.create({
+
+      header,
+
+      message,
+
+      buttons: ['Aceptar']
 
     });
 

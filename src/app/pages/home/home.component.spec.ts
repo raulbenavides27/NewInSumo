@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { SetSellerComponent } from './set-seller.component';
+import { HomeComponent } from './home.component';
 
-describe('SetSellerComponent', () => {
-  let component: SetSellerComponent;
-  let fixture: ComponentFixture<SetSellerComponent>;
+describe('HomeComponent', () => {
+  let component: HomeComponent;
+  let fixture: ComponentFixture<HomeComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SetSellerComponent ],
-      imports: [IonicModule.forRoot()]
+      declarations: [HomeComponent],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SetSellerComponent);
+    fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

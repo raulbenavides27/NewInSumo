@@ -1,7 +1,3 @@
-/* =====================================================
-   USUARIO
-===================================================== */
-
 export type UsuarioRol =
   | 'ADMIN'
   | 'SUPERVISOR'
@@ -12,7 +8,6 @@ export type UsuarioEstado =
   | 'INACTIVO';
 
 export interface Usuario {
-
   /**
    * UID generado por Firebase Authentication.
    */
@@ -24,21 +19,9 @@ export interface Usuario {
   nombre: string;
 
   /**
-   * Correo de acceso.
+   * Correo utilizado para el acceso.
    */
   email: string;
-
-  /**
-   * Contraseña.
-   * Solo utilizada durante el proceso de autenticación.
-   */
-  password: string;
-
-  /**
-   * Confirmación de contraseña.
-   * Solo utilizada durante el registro.
-   */
-  confirmacion: string;
 
   /**
    * URL de la fotografía del usuario.
@@ -46,7 +29,7 @@ export interface Usuario {
   foto: string;
 
   /**
-   * Rol dentro del ERP.
+   * Rol dentro del sistema.
    */
   rol: UsuarioRol;
 
@@ -64,5 +47,4 @@ export interface Usuario {
    * Fecha de creación del registro.
    */
   fechaCreacion: Date;
-
-}
+} 

@@ -1,27 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController, AlertController, NavController, LoadingController } from '@ionic/angular';
+import { MenuController } from '@ionic/angular';
 import {
   FormControl,
   Validators,
   FormBuilder,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { AlertController, NavController } from '@ionic/angular';
+import { Usuario } from 'src/app/models/usuario.model';
 import { FirebaseauthService } from 'src/app/services/firebaseauth.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { FirestorageService } from 'src/app/services/firestorage.service';
-
 import { Subscription } from 'rxjs';
-
-interface Cliente {
-  uid: string;
-  email: string;
-  nombre: string;
-  password: string;
-  foto: string;
-  confirmacion: string;
-  ubicacion: any;
-}
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-perfil',
@@ -30,25 +21,20 @@ interface Cliente {
 })
 export class PerfilComponent implements OnInit {
 
-  cliente: Cliente = {
-    uid: '',
-    email: '',
-    nombre: '',
-    password: '',
-    foto: '',
-    confirmacion: '',
-    ubicacion: null,
-  };
+  usuario: Usuario = this.crearUsuarioVacio();
+
+  /**
+   * Credenciales utilizadas solamente por Firebase Authentication.
+   * No se guardan en Firestore.
+   */
+  password = '';
+  confirmacion = '';
 
   newfile: any;
   uid = '';
-
   subcriberUserInfo: Subscription | undefined;
-
   loading: any;
-
   ingresarEnable = false;
-
   route: any;
 
   constructor(
@@ -62,46 +48,53 @@ export class PerfilComponent implements OnInit {
     public firestorageService: FirestorageService,
     private router: Router,
   ) {
-
     this.firebaseauthService.stateAuth().subscribe((res) => {
 
       console.log(res);
 
       if (res !== null) {
-
         this.uid = res.uid;
-
         this.getUserInfo(this.uid);
-
       } else {
-
-        this.initCliente();
-
+        this.initUsuario();
       }
 
     });
   }
 
   async ngOnInit() {
-
     const uid = await this.firebaseauthService.getUid();
-
     console.log(uid);
   }
 
-  initCliente() {
-
-    this.uid = '';
-
-    this.cliente = {
+  private crearUsuarioVacio(): Usuario {
+    return {
       uid: '',
       email: '',
       nombre: '',
-      password: '',
       foto: '',
-      confirmacion: '',
-      ubicacion: null,
+      rol: 'OPERADOR',
+      cargo: '',
+      estado: 'ACTIVO',
+      fechaCreacion: new Date(),
     };
+  }
+
+  initUsuario(): void {
+
+    this.uid = '';
+
+    this.usuario = this.crearUsuarioVacio();
+
+    this.password = '';
+    this.confirmacion = '';
+
+    this.newfile = undefined;
+
+    this.nombreControl.reset();
+    this.emailControl.reset();
+    this.passwordControl.reset();
+    this.CpasswordControl.reset();
   }
 
   async newImageUpload(event: any) {
@@ -113,43 +106,70 @@ export class PerfilComponent implements OnInit {
       const reader = new FileReader();
 
       reader.onload = (image: any) => {
-
-        this.cliente.foto = image.target.result as string;
-
+        this.usuario.foto = image.target.result as string;
       };
 
       reader.readAsDataURL(event.target.files[0]);
     }
   }
 
-  async registrarse() {
+  async registrarse(): Promise<void> {
 
-    const credenciales = {
-      email: this.cliente.email,
-      password: this.cliente.password,
-    };
+    if (
+      this.emailControl.invalid ||
+      this.nombreControl.invalid ||
+      this.passwordControl.invalid ||
+      this.CpasswordControl.invalid
+    ) {
+      return;
+    }
 
-    await this.firebaseauthService
-      .registrar(
+    if (this.password !== this.confirmacion) {
+
+      await this.showMessage(
+        'Error',
+        'Las contraseñas no coinciden.'
+      );
+
+      return;
+    }
+
+    try {
+
+      const credenciales = {
+        email: this.usuario.email,
+        password: this.password,
+      };
+
+      await this.firebaseauthService.registrar(
         credenciales.email,
         credenciales.password
-      )
-      .catch((err: any) => {
+      );
 
-        console.log('error ->', err);
+      const uid = await this.firebaseauthService.getUid();
 
-      });
+      if (!uid) {
+        throw new Error(
+          'No fue posible obtener el UID del usuario.'
+        );
+      }
 
-    const uid = await this.firebaseauthService.getUid();
+      this.usuario.uid = uid;
 
-    this.cliente.uid = uid;
+      await this.guardarUser();
 
-    this.guardarUser();
+    } catch (error: any) {
 
-    console.log(uid);
+      console.error('Error al registrar usuario:', error);
+
+      await this.showMessage(
+        'Error',
+        error?.message ?? 'No fue posible registrar el usuario.'
+      );
+    }
   }
 
-  async guardarUser() {
+  async guardarUser(): Promise<void> {
 
     this.loading = await this.loadingController.create({
       message: 'Guardando usuario...',
@@ -159,51 +179,54 @@ export class PerfilComponent implements OnInit {
 
     await this.loading.present();
 
-    const path = 'Clientes';
+    try {
 
-    const name = this.cliente.nombre;
+      const path = 'usuarios';
 
-    if (this.newfile !== undefined) {
+      const name = this.usuario.nombre || this.usuario.uid;
 
-      const res = await this.firestorageService.uploadImage(
-        this.newfile,
-        path,
-        name,
-      );
+      if (this.newfile !== undefined) {
 
-      this.cliente.foto = res;
-    }
-
-    this.firestoreService
-      .createDoc(
-        this.cliente,
-        path,
-        this.cliente.uid
-      )
-      .then(async () => {
-
-        console.log('Usuario guardado con éxito');
-
-        await this.loading.dismiss();
-
-        this.presentConfirmationAlert();
-
-        this.router.navigate(['home']);
-
-      })
-      .catch(async (error: any) => {
-
-        console.error(
-          'Error al guardar el usuario',
-          error
+        const res = await this.firestorageService.uploadImage(
+          this.newfile,
+          path,
+          name,
         );
 
-        await this.loading.dismiss();
+        this.usuario.foto = res;
+      }
 
-      });
+      await this.firestoreService.createDoc(
+        this.usuario,
+        path,
+        this.usuario.uid
+      );
+
+      console.log('Usuario guardado con éxito');
+
+      await this.loading.dismiss();
+
+      await this.presentConfirmationAlert();
+
+      this.router.navigate(['home']);
+
+    } catch (error) {
+
+      console.error(
+        'Error al guardar el usuario',
+        error
+      );
+
+      await this.loading.dismiss();
+
+      await this.showMessage(
+        'Error',
+        'No fue posible guardar el usuario.'
+      );
+    }
   }
 
-  async presentConfirmationAlert() {
+  async presentConfirmationAlert(): Promise<void> {
 
     const alert = await this.alertController.create({
       header: 'Usuario guardado',
@@ -214,31 +237,42 @@ export class PerfilComponent implements OnInit {
     await alert.present();
   }
 
-  async salir() {
+  async salir(): Promise<void> {
 
-    this.firebaseauthService.logout();
+    await this.firebaseauthService.logout();
 
     this.subcriberUserInfo?.unsubscribe();
+
+    this.initUsuario();
   }
 
-  getUserInfo(uid: string) {
+  getUserInfo(uid: string): void {
 
-    const path = 'Clientes';
+    const path = 'usuarios';
 
     this.subcriberUserInfo = this.firestoreService
-      .getDoc(path, uid)
+      .getDoc<Usuario>(path, uid)
       .subscribe((res) => {
 
-        this.cliente = res as Cliente;
+        if (res) {
+          this.usuario = res;
+        }
 
       });
   }
 
-  ingresar() {
+  ingresar(): void {
+
+    if (
+      this.emailControl.invalid ||
+      this.passwordControl.invalid
+    ) {
+      return;
+    }
 
     const credenciales = {
-      email: this.cliente.email,
-      password: this.cliente.password,
+      email: this.usuario.email,
+      password: this.password,
     };
 
     this.firebaseauthService
@@ -246,28 +280,39 @@ export class PerfilComponent implements OnInit {
         credenciales.email,
         credenciales.password
       )
-      .then((res) => {
+      .then(() => {
 
-        console.log('ingresado');
+        console.log('Ingresado');
 
         this.router.navigate(['home']);
 
+      })
+      .catch(async (error) => {
+
+        console.error(
+          'Error al iniciar sesión:',
+          error
+        );
+
+        await this.showMessage(
+          'Error',
+          'Correo o contraseña incorrectos.'
+        );
       });
   }
 
-  goToBack() {
-
+  goToBack(): void {
     this.navCrtl.back();
   }
 
   nombreControl = new FormControl('', [
     Validators.required,
-    Validators.pattern('[a-zA-Z ]*'),
+    Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*'),
   ]);
 
   emailControl = new FormControl('', [
     Validators.required,
-    Validators.email
+    Validators.email,
   ]);
 
   passwordControl = new FormControl('', [
@@ -286,18 +331,30 @@ export class PerfilComponent implements OnInit {
     ),
   ]);
 
-  showPassword: boolean = false;
+  showPassword = false;
 
-  togglePasswordVisibility() {
-
+  togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  showConfirmPassword: boolean = false;
+  showConfirmPassword = false;
 
-  toggleConfirmPasswordVisibility() {
-
+  toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword =
       !this.showConfirmPassword;
+  }
+
+  private async showMessage(
+    header: string,
+    message: string
+  ): Promise<void> {
+
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK'],
+    });
+
+    await alert.present();
   }
 }

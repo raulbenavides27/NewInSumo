@@ -1,0 +1,318 @@
+
+
+
+ion-header ion-toolbar ion-input {
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+.contenido-itd {
+  width: 100%;
+  padding: 22px 24px 36px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.acciones-registro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.subtitulo-registro p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.btn-nuevo {
+  --border-radius: 7px;
+  --box-shadow: none;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.barra-filtros {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  border: 1px solid #e2e5e9;
+  border-radius: 10px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.035);
+}
+
+.titulo-filtros {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 13px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.titulo-filtros ion-icon {
+  font-size: 19px;
+}
+
+.titulo-filtros ion-badge {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.campos-filtros {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.campo-filtro {
+  min-width: 0;
+}
+
+.campo-filtro label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.campo-visual {
+  display: flex;
+  align-items: center;
+  min-height: 39px;
+  box-sizing: border-box;
+  padding: 0 11px;
+  font-size: 12px;
+  border: 1px solid #e0e4e9;
+  border-radius: 7px;
+}
+
+.lista-itd {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.itd-card {
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  border: 1px solid #dfe2e8;
+  border-radius: 11px;
+  box-shadow: 0 3px 9px rgba(32, 40, 55, 0.06);
+}
+
+.itd-card ion-card-content {
+  padding: 22px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.folio,
+.fecha,
+.dato {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.folio span,
+.fecha span,
+.dato span {
+  font-size: 12px;
+}
+
+.folio strong {
+  font-size: 21px;
+}
+
+.fecha {
+  text-align: right;
+}
+
+.fecha strong,
+.dato strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.card-info {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px 18px;
+  padding: 20px 0;
+}
+
+.productos-itd {
+  padding: 17px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.productos-itd h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 13px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.productos-itd h3 ion-icon {
+  font-size: 20px;
+}
+
+.producto-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px;
+  margin-top: 9px;
+  border: 1px solid #e0e4e9;
+  border-radius: 8px;
+}
+
+.producto-descripcion {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.producto-descripcion strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.producto-descripcion span {
+  font-size: 12px;
+}
+
+.estado-producto {
+  flex-shrink: 0;
+}
+
+.estado-producto ion-badge {
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: normal;
+  text-align: center;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.estado-registro {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.estado-registro ion-icon {
+  font-size: 18px;
+}
+
+.btn-ver {
+  font-weight: 600;
+  margin: 0;
+}
+
+.sin-registros,
+.cargando {
+  padding: 45px 20px;
+  text-align: center;
+}
+
+.sin-registros > ion-icon {
+  font-size: 42px;
+}
+
+.sin-registros h3 {
+  font-size: 17px;
+}
+
+.sin-registros p,
+.cargando p {
+  font-size: 13px;
+}
+
+.cargando ion-spinner {
+}
+
+@media (max-width: 900px) {
+  .contenido-itd {
+    padding: 20px 18px 30px;
+  }
+
+  .campos-filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .contenido-itd {
+    padding: 16px 12px 25px;
+  }
+
+  .acciones-registro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  .barra-filtros {
+    padding: 14px;
+  }
+
+  .campos-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .itd-card ion-card-content {
+    padding: 16px;
+  }
+
+  .card-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px 12px;
+  }
+
+  .producto-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .estado-producto {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 360px) {
+  .card-info {
+    grid-template-columns: 1fr;
+  }
+}

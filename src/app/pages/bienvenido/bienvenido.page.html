@@ -1,23 +1,48 @@
-<ion-content>
-  <div class="main_content_div">
-    <div class="logo">
-      <img src="assets/imgs/logo.png" />
+
+<ion-content [fullscreen]="true" class="welcome-content">
+  <main class="welcome-shell">
+
+    <div class="welcome-logo">
+      <img
+        src="assets/imgs/logo.png"
+        alt="Logo de NewInSumo ERP"
+      />
     </div>
 
-    <ion-label class="simple_lbl"
-      >
-    </ion-label>
-    <ion-label class="simple_lbl"
-      >Estamos encantados de tenerte a bordo y estamos seguros de que esta
-      plataforma será una herramienta valiosa y util.</ion-label
-    >
-  </div>
-</ion-content>
+    <section class="welcome-intro">
+      <p class="welcome-eyebrow">
+        GESTIÓN Y CONTROL OPERACIONAL
+      </p>
 
-<ion-footer>
-  <ion-toolbar style="--background: #a6a6a8">
-    <ion-button expand="block" (click)="goToLogin()">
-      <ion-label>Comenzar</ion-label>
-    </ion-button>
-  </ion-toolbar>
-</ion-footer>
+      <h1>
+        Bienvenido a
+        <span>NewInSumo ERP</span>
+      </h1>
+
+      <p class="welcome-description">
+        Tu plataforma de gestión de inventario y operaciones.
+        Administra productos y documentos ITD desde un espacio
+        centralizado, diseñado para facilitar tu trabajo diario.
+      </p>
+
+      <div class="welcome-actions">
+        <ion-button
+          expand="block"
+          class="welcome-button"
+          (click)="goToLogin()"
+        >
+          Ingresar al sistema
+          <ion-icon
+            slot="end"
+            name="arrow-forward-outline"
+          ></ion-icon>
+        </ion-button>
+
+        <p class="welcome-caption">
+          Todo lo que necesitas para gestionar tus operaciones.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</ion-content>

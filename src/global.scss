@@ -1,3 +1,4 @@
+
 @import "~@ionic/angular/css/core.css";
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
@@ -8,120 +9,162 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
-/* =========================
-   PALETA INSUMO
-========================= */
-
-
 
 /* =========================
-   LAYOUT GENERAL
+   PALETA NEWINSUMO
 ========================= */
-//encabezado 
-//detalles del menu
-ion-menu {
-  --background: #E5E7EB;
+
+:root {
+  --ion-color-primary: #0043CE;
+  --ion-color-primary-rgb: 0, 67, 206;
+  --ion-color-primary-contrast: #FFFFFF;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #003BB5;
+  --ion-color-primary-tint: #1A55D3;
+
+  --insumo-primary: #0043CE;
+  --insumo-dark: #092A66;
+  --insumo-light: #35BDF5;
+  --insumo-background: #F4F7FC;
+  --insumo-card: #E8EFFB;
+  --insumo-border: #D7E2F5;
+  --insumo-text: #30343A;
 }
+
 /* =========================
-   TOOLBAR
+   MENÚ LATERAL
 ========================= */
+
+ion-menu {
+  --background: var(--insumo-dark);
+  --color: #FFFFFF;
+}
+
+ion-menu ion-content {
+  --background: var(--insumo-dark);
+  --color: #FFFFFF;
+}
+
+/* Encabezado del menú lateral */
+ion-menu ion-toolbar {
+  --background: var(--insumo-dark);
+  --color: #FFFFFF;
+}
+
+/* Opciones del menú */
+ion-menu ion-item {
+  --background: transparent;
+  --color: #FFFFFF;
+  --border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Iconos del menú */
+ion-menu ion-item ion-icon {
+  color: var(--insumo-light);
+}
+
+/* =========================
+   BARRA SUPERIOR PRINCIPAL
+========================= */
+
 ion-toolbar {
- --background: #E5E7EB;
+  --background: var(--insumo-primary);
+  --color: #FFFFFF;
   padding: 10px;
 }
-//contenido principal
+
+/* Iconos y botones de la barra superior */
+ion-toolbar ion-icon {
+  color: #FFFFFF;
+}
+
+ion-toolbar ion-button {
+  --color: #FFFFFF;
+}
+
+/* =========================
+   CONTENIDO GENERAL
+========================= */
+
 ion-content {
   width: 100%;
-  --background: #dddddd3a;
+  --background: var(--insumo-background);
 }
-//subcontenido principal
+
 .main_content_div {
   width: 100%;
   padding: 16px;
 }
 
-
 /* =========================
-   CARDS
+   TARJETAS
 ========================= */
 
 ion-card {
-  color: black !important;
- --background: #E5E7EB;
-  max-width: 800px;
-  margin: auto;
+  color: var(--insumo-text) !important;
+  --background: var(--insumo-card);
+  border: 1px solid var(--insumo-border);
   border-radius: 12px;
   box-shadow:
-    0 4px 6px rgba(0,0,0,.05),
-    0 10px 15px rgba(0,0,0,.03);
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 15px rgba(0, 0, 0, 0.03);
 }
-
-
 
 /* =========================
-   INPUTS
+   CAMPOS DE ENTRADA
 ========================= */
 
-/*ion-grid {
-  background: blue;
-  border: 1px solid black;
-  border-radius: 8px;
- 
-}
-ion-row {
- background: yellow;
-  border: 1px solid black;
-  border-radius: 8px;
- 
-}
-ion-col {
- background: red;
-  border: 1px solid black;
-  border-radius: 8px;
- 
-}*/
 ion-input {
-  background: white !important;
- // border: 1px solid black;
+  background: #FFFFFF !important;
   border-radius: 8px;
-  color: black;
-  --placeholder-color: black;
-  
+  color: var(--insumo-text);
+  --color: var(--insumo-text);
+  --placeholder-color: #7B8493;
 }
+
 ion-select {
-  background: white !important;
- // border: 1px solid black;
+  background: #FFFFFF !important;
   border-radius: 8px;
- 
+  color: var(--insumo-text);
+  --placeholder-color: #7B8493;
 }
+
 ion-textarea {
-  background: white !important;
- // border: 1px solid black;
+  background: #FFFFFF !important;
   border-radius: 8px;
+  color: var(--insumo-text);
+  --color: var(--insumo-text);
+  --placeholder-color: #7B8493;
 }
-
-
 
 /* =========================
    BOTONES
 ========================= */
 
 ion-button {
-  //--background: var(--insumo-primary);
- // --color: #FFFFFF;
   --border-radius: 8px;
   font-weight: 600;
-  //box-shadow:
-    //0 2px 4px rgba(0,0,0,.12);
 }
+
+ion-button.btn-nuevo,
+.btn-nuevo {
+  --background: var(--insumo-primary);
+  --background-hover: var(--ion-color-primary-shade);
+  --color: #FFFFFF;
+}
+
+/* =========================
+   LOGO
+========================= */
 
 .logo {
-
   max-width: 300px;
-
   align-items: center;
-
 }
-
-
-
+.logo_principal {
+  max-width: 300px;
+  align-items: center;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+}

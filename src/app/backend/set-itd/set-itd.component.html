@@ -1,4 +1,4 @@
-<ion-header >
+<ion-header>
 
   <ion-toolbar>
 
@@ -18,23 +18,31 @@
       </ion-button>
     </ion-buttons>
 
-    <ion-buttons slot="end" (click)="goPerfil()">
+    <ion-buttons
+      slot="end"
+      (click)="goPerfil()">
+
       <ion-button>
+
         <ion-icon
           slot="icon-only"
           name="person-circle">
         </ion-icon>
+
       </ion-button>
+
     </ion-buttons>
 
   </ion-toolbar>
 
 </ion-header>
 
+
 <ion-content>
 
   <div class="main_content_div">
-    <ion-card >
+
+    <ion-card>
 
       <ion-card-header>
 
@@ -44,33 +52,45 @@
 
       </ion-card-header>
 
+
       <ion-card-content>
 
         <!-- DATOS GENERALES -->
 
         <ion-grid>
+
           <!-- FILA 1 -->
+
           <ion-row>
+
             <ion-col size="6">
+
               <ion-label>
                 Fecha
               </ion-label>
-              <ion-input 
-               fill="outline"
+
+              <ion-input
+                fill="outline"
                 type="date"
                 [(ngModel)]="itd.fechaDeclarada">
               </ion-input>
+
             </ion-col>
+
+
             <ion-col size="6">
+
               <ion-label>
                 ITD
               </ion-label>
+
               <ion-input
                 readonly
                 [(ngModel)]="itd.folio">
               </ion-input>
 
             </ion-col>
+
 
             <ion-col size="4">
 
@@ -85,27 +105,41 @@
 
             </ion-col>
 
+
+            <!-- SELLER -->
+
             <ion-col size="4">
 
               <ion-label>
                 Seller
               </ion-label>
 
-              <ion-select
+              <select
                 [(ngModel)]="itd.sellerId"
-                (ionChange)="seleccionarSellerHtml()">
+                (ngModelChange)="seleccionarSellerHtml()">
 
-                <ion-select-option
+                <option
+                  value=""
+                  disabled>
+
+                  Seleccione Seller
+
+                </option>
+
+                <option
                   *ngFor="let seller of sellers"
                   [value]="seller.id">
 
                   {{ seller.nombre }}
 
-                </ion-select-option>
+                </option>
 
-              </ion-select>
+              </select>
 
             </ion-col>
+
+
+            <!-- CODIGO SELLER -->
 
             <ion-col size="4">
 
@@ -117,7 +151,10 @@
                 readonly
                 [(ngModel)]="itd.sellerCodigo">
               </ion-input>
+
             </ion-col>
+
+
             <ion-col size="6">
 
               <ion-label>
@@ -125,11 +162,12 @@
               </ion-label>
 
               <ion-input
-               fill="outline"
+                fill="outline"
                 [(ngModel)]="itd.ocPedido">
               </ion-input>
 
             </ion-col>
+
 
             <ion-col size="6">
 
@@ -142,32 +180,40 @@
               </ion-input>
 
             </ion-col>
+
           </ion-row>
+
         </ion-grid>
-      <ion-grid>
-      <ion-row>
-          <ion-col>
 
-            <strong>
-               Detalle Productos
-              
-            </strong>
 
-          </ion-col>
+        <!-- PRODUCTOS -->
 
-          <ion-col size="auto">
+        <ion-grid>
 
-            <ion-button  size="small"
-              color="success"
-              (click)="agregarProducto()">
+          <ion-row>
 
-              Agregar Producto
+            <ion-col>
 
-            </ion-button>
+              <strong>
+                Detalle Productos
+              </strong>
 
-          </ion-col>
+            </ion-col>
 
-        </ion-row>
+
+            <ion-col size="auto">
+
+              <ion-button
+                size="small"
+                (click)="agregarProducto()">
+
+                Agregar Producto
+
+              </ion-button>
+
+            </ion-col>
+
+          </ion-row>
 
 
           <!-- CABECERA -->
@@ -195,10 +241,14 @@
 
           </ion-row>
 
+
           <!-- DETALLE -->
 
           <ion-row
-            *ngFor="let producto of itd.productos; let i=index">
+            *ngFor="
+              let producto of itd.productos;
+              let i = index
+            ">
 
             <ion-col size="2">
 
@@ -208,6 +258,7 @@
 
             </ion-col>
 
+
             <ion-col size="5">
 
               <ion-input
@@ -215,6 +266,7 @@
               </ion-input>
 
             </ion-col>
+
 
             <ion-col size="2">
 
@@ -225,32 +277,42 @@
 
             </ion-col>
 
+
             <ion-col size="2">
 
               <ion-select
                 [(ngModel)]="producto.estadoProducto">
 
-                <ion-select-option value="BUEN_ESTADO">
+                <ion-select-option
+                  value="BUEN_ESTADO">
+
                   Bueno
+
                 </ion-select-option>
 
-                <ion-select-option value="RECUPERABLE">
+                <ion-select-option
+                  value="RECUPERABLE">
+
                   Recuperable
+
                 </ion-select-option>
 
-                <ion-select-option value="MAL_ESTADO">
+                <ion-select-option
+                  value="MAL_ESTADO">
+
                   Malo
+
                 </ion-select-option>
 
               </ion-select>
 
             </ion-col>
 
+
             <ion-col size="1">
 
               <ion-button
                 fill="clear"
-                color="danger"
                 (click)="eliminarProducto(i)">
 
                 <ion-icon
@@ -264,54 +326,73 @@
           </ion-row>
 
         </ion-grid>
-  
-        <ion-grid>
-          <ion-row>
-            <ion-col size="12">
+
+
         <!-- DETALLE ESTADO -->
-          <ion-label position="stacked">
-            Detalle Estado
-          </ion-label>
-</ion-col>
-<ion-col size="12">
-          <ion-textarea
-            autoGrow="true"
-            [(ngModel)]="itd.detalleEstado">
-          </ion-textarea>
-       </ion-col>
+
+        <ion-grid>
+
+          <ion-row>
+
+            <ion-col size="12">
+
+              <ion-label position="stacked">
+                Detalle Estado
+              </ion-label>
+
+            </ion-col>
 
 
-        <!-- FOTOS -->
+            <ion-col size="12">
 
- 
-<ion-col size="12">
-          <ion-label position="stacked">
-            Adjuntar Fotografías
-          </ion-label>
-</ion-col>
-<ion-col size="12">
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            capture="environment"
-            (change)="agregarFoto($event)">
+              <ion-textarea
+                autoGrow="true"
+                [(ngModel)]="itd.detalleEstado">
+              </ion-textarea>
 
-      
+            </ion-col>
 
-        <ion-list *ngIf="itd.fotos.length > 0">
 
-          <ion-item
-            *ngFor="let foto of itd.fotos">
+            <!-- FOTOS -->
 
-            {{ foto }}
+            <ion-col size="12">
 
-          </ion-item>
+              <ion-label position="stacked">
+                Adjuntar Fotografías
+              </ion-label>
 
-        </ion-list>
-</ion-col>
-        </ion-row>
- </ion-grid>
+            </ion-col>
+
+
+            <ion-col size="12">
+
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                capture="environment"
+                (change)="agregarFoto($event)">
+
+
+              <ion-list
+                *ngIf="itd.fotos.length > 0">
+
+                <ion-item
+                  *ngFor="let foto of itd.fotos">
+
+                  {{ foto }}
+
+                </ion-item>
+
+              </ion-list>
+
+            </ion-col>
+
+          </ion-row>
+
+        </ion-grid>
+
+
         <!-- RESPONSABLE -->
 
         <ion-grid>
@@ -331,6 +412,7 @@
 
             </ion-col>
 
+
             <ion-col size="6">
 
               <ion-label>
@@ -348,30 +430,43 @@
 
         </ion-grid>
 
+
+        <!-- BOTONES -->
+
         <ion-grid>
+
           <ion-row>
-            <ion-col size="6" >
-        <ion-button  size="small"
-          expand="block"
-          color="success"
-          (click)="guardarITD()">
 
-          Guardar ITD
+            <ion-col size="6">
 
-        </ion-button>
+              <ion-button
+                size="small"
+                expand="block"
+                (click)="guardarITD()">
+
+                Guardar ITD
+
+              </ion-button>
+
             </ion-col>
-          <ion-col size="6">
-        <ion-button  size="small"
-          expand="block"
-          color="medium"
-          (click)="cancelar()">
 
-          Limpiar Formulario
 
-        </ion-button>
-          </ion-col>
+            <ion-col size="6">
+
+              <ion-button
+                size="small"
+                expand="block"
+                (click)="cancelar()">
+
+                Limpiar Formulario
+
+              </ion-button>
+
+            </ion-col>
+
           </ion-row>
-</ion-grid>
+
+        </ion-grid>
 
       </ion-card-content>
 

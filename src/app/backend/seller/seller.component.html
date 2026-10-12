@@ -52,7 +52,6 @@
         </ion-button>
 
         <ion-button
-          color="danger"
           *ngIf="enableNuevo"
           (click)="cancelar()">
 
@@ -166,7 +165,6 @@
 
         <ion-button
           expand="block"
-          color="success"
           (click)="guardarSeller()">
 
           {{ editando ? 'Actualizar Seller' : 'Guardar Seller' }}
@@ -259,7 +257,6 @@
 
                   <ion-button
                     size="small"
-                    color="warning"
                     (click)="editarSeller(seller)">
 
                     Editar
@@ -333,7 +330,6 @@
 
             <ion-button
               expand="block"
-              color="warning"
               (click)="editarSeller(seller)">
 
               Editar

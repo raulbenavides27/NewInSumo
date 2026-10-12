@@ -9,6 +9,9 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
+
+   searchTerm = '';
+   
   constructor(
     public menuController: MenuController,
     private router: Router

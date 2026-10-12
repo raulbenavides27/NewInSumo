@@ -1,22 +1,218 @@
+
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
+ 
     <ion-input
       type="text"
       placeholder="Buscar"
-      [(ngModel)]="searchTerm"
-    ></ion-input>
+      [(ngModel)]="searchTerm">
+    </ion-input>
+
     <ion-buttons slot="end">
       <ion-button (click)="filterProperties()">
         <ion-icon name="search-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-buttons (click)="goPerfil()" slot="end">
-      <ion-button>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="goPerfil()">
         <ion-icon slot="icon-only" name="person-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-content>
+  <main class="contenido-itd">
+
+    <!-- Acciones principales -->
+    <section class="acciones-registro">
+      <div class="subtitulo-registro">
+        <p>Consulta y seguimiento de los ITD registrados</p>
+      </div>
+
+      <ion-button
+        class="btn-nuevo"
+        routerLink="/www/set-itd"
+      >
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        NUEVO ITD
+      </ion-button>
+    </section>
+
+    <!-- Filtros visuales: funcionalidad pendiente -->
+    <section class="barra-filtros">
+      <div class="titulo-filtros">
+        <ion-icon name="filter-outline"></ion-icon>
+        <span>Filtrar registros</span>
+        <ion-badge >Próximamente</ion-badge>
+      </div>
+
+      <div class="campos-filtros">
+        <div class="campo-filtro">
+          <label>Folio ITD</label>
+          <div class="campo-visual">Ej. ITD 02</div>
+        </div>
+
+        <div class="campo-filtro">
+          <label>Producto / SKU</label>
+          <div class="campo-visual">Nombre o código del producto</div>
+        </div>
+
+        <div class="campo-filtro">
+          <label>Fecha declarada</label>
+          <div class="campo-visual">dd/mm/aaaa</div>
+        </div>
+
+        <div class="campo-filtro">
+          <label>Seller</label>
+          <div class="campo-visual">Nombre del Seller</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tarjetas de ITD -->
+    <section class="lista-itd">
+      <ion-card
+        class="itd-card"
+        *ngFor="let itd of itdsFiltrados"
+      >
+        <ion-card-content>
+
+          <div class="card-header">
+            <div class="folio">
+              <span>Folio</span>
+              <strong>ITD {{ itd.folio | number:'2.0-0' }}</strong>
+            </div>
+
+            <div class="fecha">
+              <span>Fecha declarada</span>
+              <strong>{{ itd.fechaDeclarada }}</strong>
+            </div>
+          </div>
+
+          <div class="card-info">
+            <div class="dato">
+              <span>Seller</span>
+              <strong>{{ itd.sellerNombre }}</strong>
+            </div>
+
+            <div class="dato">
+              <span>Documento</span>
+              <strong>{{ itd.documento }}</strong>
+            </div>
+
+            <div class="dato">
+              <span>OC / Pedido</span>
+              <strong>{{ itd.ocPedido }}</strong>
+            </div>
+
+            <div class="dato">
+              <span>N.º Seguimiento</span>
+              <strong>{{ itd.numeroSeguimiento }}</strong>
+            </div>
+
+            <div class="dato">
+              <span>Total de productos</span>
+              <strong>{{ itd.productos.length }}</strong>
+            </div>
+
+            <div class="dato">
+              <span>Responsable</span>
+              <strong>{{ itd.responsableCreacion }}</strong>
+            </div>
+          </div>
+
+          <!-- Productos -->
+          <div class="productos-itd">
+            <h3>
+              <ion-icon name="cube-outline"></ion-icon>
+              Productos registrados
+            </h3>
+
+            <div
+              class="producto-item"
+              *ngFor="let producto of itd.productos"
+            >
+              <div class="producto-descripcion">
+                <strong>
+                  {{ producto.descripcion || 'Sin descripción' }}
+                </strong>
+
+                <span>SKU: {{ producto.sku || 'Sin SKU' }}</span>
+                <span>Cantidad: {{ producto.cantidad }}</span>
+              </div>
+
+              <div
+                class="estado-producto"
+                [ngSwitch]="producto.estadoProducto"
+              >
+                <ion-badge
+                  *ngSwitchCase="'BUEN_ESTADO'"
+                >
+                  Apto para la venta
+                </ion-badge>
+
+                <ion-badge
+                  *ngSwitchCase="'RECUPERABLE'"
+                >
+                  Recuperable · Revisar
+                </ion-badge>
+
+                <ion-badge
+                  *ngSwitchCase="'MAL_ESTADO'"
+                >
+                  No apto para la venta
+                </ion-badge>
+
+                <ion-badge
+                  *ngSwitchDefault
+                >
+                  Estado sin definir
+                </ion-badge>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <span class="estado-registro">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              Registrado
+            </span>
+
+            <ion-button
+              fill="clear"
+              class="btn-ver"
+              (click)="verITD(itd)"
+            >
+              <ion-icon
+                slot="start"
+                name="eye-outline"
+              ></ion-icon>
+              Ver detalle
+            </ion-button>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+      <div
+        class="sin-registros"
+        *ngIf="itdsFiltrados.length === 0 && !cargando"
+      >
+        <ion-icon name="document-text-outline"></ion-icon>
+        <h3>No hay ITD registrados</h3>
+        <p>No se encontraron registros que coincidan con la búsqueda.</p>
+      </div>
+
+      <div class="cargando" *ngIf="cargando">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando registros...</p>
+      </div>
+    </section>
+
+  </main>
+</ion-content>

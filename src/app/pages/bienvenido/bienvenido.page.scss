@@ -1,5 +1,123 @@
-.logo {
-  max-width: 360;
-  padding: 10px;
-  margin-bottom: 20px;
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.welcome-content {
+  --background: #F4F7FC;
+}
+
+.welcome-shell {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(53, 189, 245, 0.12),
+      transparent 38%
+    ),
+    #F4F7FC;
+}
+
+.welcome-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.welcome-logo img {
+  display: block;
+  width: 220px;
+  max-width: 65vw;
+  height: auto;
+  object-fit: contain;
+}
+
+.welcome-intro {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.welcome-eyebrow {
+  margin: 0 0 14px;
+  color: #0043CE;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.welcome-intro h1 {
+  margin: 0;
+  color: #092A66;
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.welcome-intro h1 span {
+  display: block;
+  color: #0043CE;
+}
+
+.welcome-description {
+  max-width: 590px;
+  margin: 20px auto 0;
+  color: #5B6577;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.welcome-actions {
+  width: 100%;
+  max-width: 320px;
+  margin: 30px auto 0;
+}
+
+.welcome-button {
+  min-height: 52px;
+  --background: #0043CE;
+  --background-hover: #003BB5;
+  --background-activated: #003BB5;
+  --color: #FFFFFF;
+  --border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  box-shadow: 0 8px 20px rgba(0, 67, 206, 0.18);
+}
+
+.welcome-caption {
+  margin: 14px 0 0;
+  color: #7B8493;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 576px) {
+  .welcome-shell {
+    padding: 32px 22px;
+  }
+
+  .welcome-logo img {
+    width: 175px;
+  }
+
+  .welcome-description {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .welcome-actions {
+    max-width: 100%;
+  }
 }

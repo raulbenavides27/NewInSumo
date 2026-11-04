@@ -1,7 +1,6 @@
+
 <ion-header>
-
   <ion-toolbar>
-
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -18,460 +17,336 @@
       </ion-button>
     </ion-buttons>
 
-    <ion-buttons
-      slot="end"
-      (click)="goPerfil()">
-
+    <ion-buttons slot="end" (click)="goPerfil()">
       <ion-button>
-
         <ion-icon
           slot="icon-only"
           name="person-circle">
         </ion-icon>
-
       </ion-button>
-
     </ion-buttons>
-
   </ion-toolbar>
-
 </ion-header>
 
-
 <ion-content>
-
   <div class="main_content_div">
-
     <ion-card>
-
       <ion-card-header>
-
         <ion-card-title>
           Ingreso ITD
         </ion-card-title>
-
       </ion-card-header>
-
 
       <ion-card-content>
 
         <!-- DATOS GENERALES -->
-
-        <ion-grid>
-
-          <!-- FILA 1 -->
-
+        <ion-grid class="datos-generales">
           <ion-row>
-
+            <!-- FECHA -->
             <ion-col size="6">
-
-              <ion-label>
-                Fecha
-              </ion-label>
-
+              <ion-label>Fecha</ion-label>
               <ion-input
                 fill="outline"
                 type="date"
                 [(ngModel)]="itd.fechaDeclarada">
               </ion-input>
-
             </ion-col>
 
-
+            <!-- ITD -->
             <ion-col size="6">
-
-              <ion-label>
-                ITD
-              </ion-label>
-
+              <ion-label>ITD</ion-label>
               <ion-input
+                fill="outline"
                 readonly
                 [(ngModel)]="itd.folio">
               </ion-input>
-
             </ion-col>
 
-
-            <ion-col size="4">
-
-              <ion-label>
-                N° Factura / Boleta
-              </ion-label>
-
+            <!-- FACTURA -->
+            <ion-col size="4" class="datos-documento">
+              <ion-label>N.º Factura / Boleta</ion-label>
               <ion-input
+                fill="outline"
                 type="number"
                 [(ngModel)]="itd.documento">
               </ion-input>
-
             </ion-col>
 
-
             <!-- SELLER -->
-
-            <ion-col size="4">
-
-              <ion-label>
-                Seller
-              </ion-label>
-
-              <select
+            <ion-col size="4" class="datos-seller">
+              <ion-label>Seller</ion-label>
+              <ion-select
+                class="seller-select"
+                fill="outline"
+                interface="popover"
+                placeholder="Seleccione Seller"
                 [(ngModel)]="itd.sellerId"
                 (ngModelChange)="seleccionarSellerHtml()">
 
-                <option
-                  value=""
-                  disabled>
-
-                  Seleccione Seller
-
-                </option>
-
-                <option
+                <ion-select-option
                   *ngFor="let seller of sellers"
                   [value]="seller.id">
-
                   {{ seller.nombre }}
-
-                </option>
-
-              </select>
-
+                </ion-select-option>
+              </ion-select>
             </ion-col>
 
-
-            <!-- CODIGO SELLER -->
-
-            <ion-col size="4">
-
-              <ion-label>
-                Código Seller
-              </ion-label>
-
+            <!-- CÓDIGO SELLER -->
+            <ion-col size="4" class="datos-codigo">
+              <ion-label>Código Seller</ion-label>
               <ion-input
+                fill="outline"
                 readonly
                 [(ngModel)]="itd.sellerCodigo">
               </ion-input>
-
             </ion-col>
 
-
+            <!-- OC / PEDIDO -->
             <ion-col size="6">
-
-              <ion-label>
-                OC / Pedido
-              </ion-label>
-
+              <ion-label>OC / Pedido</ion-label>
               <ion-input
                 fill="outline"
                 [(ngModel)]="itd.ocPedido">
               </ion-input>
-
             </ion-col>
 
-
+            <!-- SEGUIMIENTO -->
             <ion-col size="6">
-
-              <ion-label>
-                N° Seguimiento
-              </ion-label>
-
+              <ion-label>N.º Seguimiento</ion-label>
               <ion-input
+                fill="outline"
                 [(ngModel)]="itd.numeroSeguimiento">
               </ion-input>
-
             </ion-col>
-
           </ion-row>
-
         </ion-grid>
 
-
         <!-- PRODUCTOS -->
+        <div class="productos-seccion">
+          <div class="productos-titulo">
+            <strong>Detalle Productos</strong>
 
-        <ion-grid>
+            <ion-button
+              size="small"
+              (click)="agregarProducto()">
+              <ion-icon
+                slot="start"
+                name="add-outline">
+              </ion-icon>
+              Agregar producto
+            </ion-button>
+          </div>
 
-          <ion-row>
+          <!-- LISTA DE PRODUCTOS -->
+          <div
+            class="producto-item"
+            *ngFor="let producto of itd.productos; let i = index">
 
-            <ion-col>
+            <!-- PRIMERA FILA: SKU Y DESCRIPCIÓN -->
+            <div class="producto-principal">
+              <div class="campo-producto campo-sku">
+                <ion-label>SKU</ion-label>
+                <ion-input
+                  fill="outline"
+                  [(ngModel)]="producto.sku">
+                </ion-input>
+              </div>
 
-              <strong>
-                Detalle Productos
-              </strong>
+              <div class="campo-producto campo-descripcion">
+                <ion-label>Descripción</ion-label>
+                <ion-input
+                  fill="outline"
+                  [(ngModel)]="producto.descripcion">
+                </ion-input>
+              </div>
+            </div>
 
-            </ion-col>
+            <!-- SEGUNDA FILA: CANTIDAD Y ESTADO -->
+            <div class="producto-secundario">
+              <div class="campo-producto campo-cantidad">
+                <ion-label>Cantidad</ion-label>
+                <ion-input
+                  fill="outline"
+                  type="number"
+                  [(ngModel)]="producto.cantidad">
+                </ion-input>
+              </div>
 
+              <div class="campo-producto campo-estado">
+                <ion-label>Estado</ion-label>
+                <ion-select
+                  fill="outline"
+                  interface="popover"
+                  [(ngModel)]="producto.estadoProducto">
 
-            <ion-col size="auto">
+                  <ion-select-option value="BUEN_ESTADO">
+                    Bueno
+                  </ion-select-option>
 
+                  <ion-select-option value="RECUPERABLE">
+                    Recuperable
+                  </ion-select-option>
+
+                  <ion-select-option value="MAL_ESTADO">
+                    Malo
+                  </ion-select-option>
+                </ion-select>
+              </div>
+
+              <!-- ELIMINAR PRODUCTO -->
               <ion-button
-                size="small"
-                (click)="agregarProducto()">
-
-                Agregar Producto
-
-              </ion-button>
-
-            </ion-col>
-
-          </ion-row>
-
-
-          <!-- CABECERA -->
-
-          <ion-row>
-
-            <ion-col size="2">
-              <strong>SKU</strong>
-            </ion-col>
-
-            <ion-col size="5">
-              <strong>Descripción</strong>
-            </ion-col>
-
-            <ion-col size="2">
-              <strong>Cantidad</strong>
-            </ion-col>
-
-            <ion-col size="2">
-              <strong>Estado</strong>
-            </ion-col>
-
-            <ion-col size="1">
-            </ion-col>
-
-          </ion-row>
-
-
-          <!-- DETALLE -->
-
-          <ion-row
-            *ngFor="
-              let producto of itd.productos;
-              let i = index
-            ">
-
-            <ion-col size="2">
-
-              <ion-input
-                [(ngModel)]="producto.sku">
-              </ion-input>
-
-            </ion-col>
-
-
-            <ion-col size="5">
-
-              <ion-input
-                [(ngModel)]="producto.descripcion">
-              </ion-input>
-
-            </ion-col>
-
-
-            <ion-col size="2">
-
-              <ion-input
-                type="number"
-                [(ngModel)]="producto.cantidad">
-              </ion-input>
-
-            </ion-col>
-
-
-            <ion-col size="2">
-
-              <ion-select
-                [(ngModel)]="producto.estadoProducto">
-
-                <ion-select-option
-                  value="BUEN_ESTADO">
-
-                  Bueno
-
-                </ion-select-option>
-
-                <ion-select-option
-                  value="RECUPERABLE">
-
-                  Recuperable
-
-                </ion-select-option>
-
-                <ion-select-option
-                  value="MAL_ESTADO">
-
-                  Malo
-
-                </ion-select-option>
-
-              </ion-select>
-
-            </ion-col>
-
-
-            <ion-col size="1">
-
-              <ion-button
+                class="eliminar-producto"
                 fill="clear"
+                color="primary"
+                aria-label="Eliminar producto"
                 (click)="eliminarProducto(i)">
 
                 <ion-icon
-                  name="trash">
+                  slot="icon-only"
+                  name="trash-outline">
                 </ion-icon>
-
               </ion-button>
+            </div>
+          </div>
+        </div>
 
-            </ion-col>
-
-          </ion-row>
-
-        </ion-grid>
-
-
-        <!-- DETALLE ESTADO -->
-
-        <ion-grid>
-
+        <!-- DETALLE DEL ESTADO -->
+        <ion-grid class="detalle-estado">
           <ion-row>
-
             <ion-col size="12">
-
-              <ion-label position="stacked">
-                Detalle Estado
-              </ion-label>
-
-            </ion-col>
-
-
-            <ion-col size="12">
-
+              <ion-label>Detalle Estado</ion-label>
               <ion-textarea
+                fill="outline"
                 autoGrow="true"
                 [(ngModel)]="itd.detalleEstado">
               </ion-textarea>
-
             </ion-col>
-
-
-            <!-- FOTOS -->
-
-            <ion-col size="12">
-
-              <ion-label position="stacked">
-                Adjuntar Fotografías
-              </ion-label>
-
-            </ion-col>
-
-
-            <ion-col size="12">
-
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                capture="environment"
-                (change)="agregarFoto($event)">
-
-
-              <ion-list
-                *ngIf="itd.fotos.length > 0">
-
-                <ion-item
-                  *ngFor="let foto of itd.fotos">
-
-                  {{ foto }}
-
-                </ion-item>
-
-              </ion-list>
-
-            </ion-col>
-
           </ion-row>
+         
+<!-- FOTOGRAFÍAS -->
+<ion-row>
+  <ion-col size="12">
+    <ion-label>Adjuntar fotografías</ion-label>
+
+    <div class="fotos-control">
+      <!-- ESCRITORIO Y GALERÍA DEL MÓVIL -->
+      <input
+        #selectorGaleria
+        class="input-fotos-oculto"
+        type="file"
+        accept="image/*"
+        multiple
+        (change)="agregarFoto($event)">
+
+      <!-- CÁMARA DEL MÓVIL -->
+      <input
+        #selectorCamara
+        class="input-fotos-oculto"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        (change)="agregarFoto($event)">
+
+      <div class="fotos-botones">
+        <ion-button
+          type="button"
+          fill="outline"
+          class="boton-fotos"
+          (click)="selectorGaleria.click()">
+
+          <ion-icon slot="start" name="images-outline"></ion-icon>
+          Elegir fotos
+        </ion-button>
+
+        <ion-button
+          type="button"
+          fill="outline"
+          class="boton-fotos"
+          (click)="selectorCamara.click()">
+
+          <ion-icon slot="start" name="camera-outline"></ion-icon>
+          Tomar foto
+        </ion-button>
+      </div>
+
+      <p class="fotos-ayuda">
+        Puedes seleccionar varias imágenes y revisarlas antes de guardar.
+      </p>
+
+      <!-- VISTA PREVIA -->
+      <div class="fotos-galeria" *ngIf="fotosSeleccionadas.length > 0">
+        <div class="foto-preview" *ngFor="let foto of fotosSeleccionadas; let i = index">
+          <img [src]="foto.url" [alt]="foto.nombre">
+
+          <div class="foto-preview-pie">
+            <span>{{ foto.nombre }}</span>
+
+            <ion-button
+              type="button"
+              fill="clear"
+              color="danger"
+              size="small"
+              aria-label="Eliminar fotografía"
+              (click)="eliminarFoto(i)">
+
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ion-col>
+</ion-row>
 
         </ion-grid>
 
-
-        <!-- RESPONSABLE -->
-
-        <ion-grid>
-
+        <!-- RESPONSABLE Y CARGO -->
+        <ion-grid class="datos-responsable">
           <ion-row>
-
             <ion-col size="6">
-
-              <ion-label>
-                Responsable
-              </ion-label>
-
+              <ion-label>Responsable</ion-label>
               <ion-input
+                fill="outline"
                 readonly
                 [(ngModel)]="itd.responsableCreacion">
               </ion-input>
-
             </ion-col>
 
-
             <ion-col size="6">
-
-              <ion-label>
-                Cargo
-              </ion-label>
-
+              <ion-label>Cargo</ion-label>
               <ion-input
+                fill="outline"
                 readonly
                 [(ngModel)]="itd.cargoCreacion">
               </ion-input>
-
             </ion-col>
-
           </ion-row>
-
         </ion-grid>
 
-
-        <!-- BOTONES -->
-
-        <ion-grid>
-
+        <!-- BOTONES FINALES -->
+        <ion-grid class="botones-finales">
           <ion-row>
-
             <ion-col size="6">
-
               <ion-button
                 size="small"
                 expand="block"
                 (click)="guardarITD()">
-
                 Guardar ITD
-
               </ion-button>
-
             </ion-col>
 
-
             <ion-col size="6">
-
               <ion-button
                 size="small"
                 expand="block"
                 (click)="cancelar()">
-
-                Limpiar Formulario
-
+                Limpiar formulario
               </ion-button>
-
             </ion-col>
-
           </ion-row>
-
         </ion-grid>
 
       </ion-card-content>
-
     </ion-card>
-
   </div>
-
 </ion-content>

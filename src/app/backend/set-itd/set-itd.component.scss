@@ -1,0 +1,471 @@
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.main_content_div {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+ion-card {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 18px;
+  background: #eaf0fc;
+}
+
+ion-card-content {
+  padding: 12px;
+}
+
+ion-grid {
+  width: 100%;
+  padding: 0;
+}
+
+ion-row {
+  align-items: stretch;
+}
+
+ion-col {
+  min-width: 0;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+/* ===== ETIQUETAS ===== */
+ion-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #343944;
+  font-size: 16px;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+/* ===== CAMPOS GENERALES ===== */
+ion-input,
+ion-textarea,
+ion-select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  color: #343944;
+  --background: #fff;
+  --border-radius: 14px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+ion-input {
+  min-height: 48px;
+  background: #fff;
+  border-radius: 14px;
+}
+
+ion-textarea {
+  min-height: 100px;
+  background: #fff;
+  border-radius: 14px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+}
+
+ion-select {
+  min-height: 48px;
+  background: #fff;
+  border-radius: 14px;
+}
+
+/* ===== SELECT SELLER ===== */
+ion-select.seller-select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  background: #fff;
+  font-size: 15px;
+  --background: #fff;
+  --placeholder-color: #343944;
+  --placeholder-opacity: 1;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+/* ===== BOTONES GENERALES ===== */
+ion-button {
+  --border-radius: 12px;
+  font-weight: 600;
+  white-space: normal;
+}
+
+ion-button::part(native) {
+  line-height: 1.2;
+  white-space: normal;
+}
+
+/* ===== PRODUCTOS ===== */
+.productos-seccion {
+  width: 100%;
+  min-width: 0;
+  margin: 12px 0 20px;
+}
+
+.productos-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.productos-titulo strong {
+  font-size: 16px;
+}
+
+.producto-item {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid #d8dfed;
+}
+
+.producto-principal,
+.producto-secundario {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.producto-secundario {
+  margin-top: 12px;
+}
+
+.campo-producto {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.campo-producto ion-label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.campo-producto ion-input,
+.campo-producto ion-select {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  min-height: 48px;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 12px;
+  font-size: 14px;
+  --background: #fff;
+}
+
+/* SKU y descripción */
+.campo-sku {
+  flex: 0 0 28%;
+}
+
+.campo-descripcion {
+  flex: 1 1 72%;
+}
+
+/* Cantidad y estado */
+.campo-cantidad {
+  flex: 0 0 28%;
+}
+
+.campo-estado {
+  flex: 1 1 auto;
+}
+
+/* Igualar altura de los controles de producto */
+.producto-secundario {
+  align-items: flex-end;
+}
+
+.producto-secundario .campo-cantidad ion-input,
+.producto-secundario .campo-estado ion-select {
+  height: 48px;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.producto-secundario .campo-estado ion-select {
+  padding-top: 0;
+  padding-bottom: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+.producto-secundario .campo-cantidad ion-input {
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+/* Botón eliminar producto */
+.eliminar-producto {
+  flex: 0 0 38px;
+  align-self: flex-end;
+  margin: 0;
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+
+/* ===== FOTOGRAFÍAS ===== */
+.fotos-control {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.input-fotos-oculto {
+  display: none;
+}
+
+.fotos-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.boton-fotos {
+  margin: 8px 0;
+  --border-radius: 12px;
+  --border-color: #0b49c5;
+  --color: #0b49c5;
+  font-size: 14px;
+}
+
+.fotos-ayuda {
+  margin: 4px 0 12px;
+  color: #606776;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.fotos-galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.foto-preview {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #d8dfed;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.foto-preview img {
+  display: block;
+  width: 100%;
+  height: 125px;
+  object-fit: cover;
+}
+
+.foto-preview-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+.foto-preview-pie span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.foto-preview-pie ion-button {
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* ===== VISTA MÓVIL ===== */
+@media (max-width: 600px) {
+  .main_content_div {
+    padding: 8px;
+  }
+
+  ion-card-content {
+    padding: 10px;
+  }
+
+  ion-card-title {
+    font-size: 23px;
+  }
+
+  ion-col {
+    padding: 5px;
+  }
+
+  ion-label {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  ion-input,
+  ion-select {
+    min-height: 46px;
+    font-size: 14px;
+  }
+
+  /* Factura, Seller y Código Seller */
+  .datos-documento,
+  .datos-seller,
+  .datos-codigo {
+    flex: 0 0 33.3333%;
+    width: 33.3333%;
+    max-width: 33.3333%;
+  }
+
+  .datos-documento ion-label,
+  .datos-seller ion-label,
+  .datos-codigo ion-label {
+    min-height: 38px;
+  }
+
+  .datos-documento ion-input,
+  .datos-seller ion-select,
+  .datos-codigo ion-input {
+    font-size: 12px;
+    --padding-start: 6px;
+    --padding-end: 4px;
+  }
+
+  /* Título y botón de productos */
+  .productos-titulo strong {
+    font-size: 15px;
+  }
+
+  .productos-titulo ion-button {
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+
+  .producto-principal,
+  .producto-secundario {
+    gap: 8px;
+  }
+
+  /* SKU y descripción */
+  .campo-sku {
+    flex: 0 0 28%;
+  }
+
+  .campo-descripcion {
+    flex: 1 1 72%;
+  }
+
+  /* Cantidad y estado */
+  .campo-cantidad {
+    flex: 0 0 28%;
+  }
+
+  .campo-estado {
+    flex: 1 1 auto;
+  }
+
+  .campo-producto ion-label {
+    font-size: 14px;
+  }
+
+  .campo-producto ion-input,
+  .campo-producto ion-select {
+    height: 46px;
+    min-height: 46px;
+    font-size: 14px;
+    --padding-start: 8px;
+    --padding-end: 6px;
+  }
+
+  .producto-secundario .campo-cantidad ion-input,
+  .producto-secundario .campo-estado ion-select {
+    height: 46px;
+    min-height: 46px;
+  }
+
+  .eliminar-producto {
+    flex-basis: 34px;
+  }
+
+  /* Botones de fotografías */
+  .fotos-botones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .boton-fotos {
+    width: 100%;
+    max-width: 100%;
+    margin: 4px 0;
+    font-size: 12px;
+    --padding-start: 6px;
+    --padding-end: 6px;
+  }
+
+  .fotos-galeria {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .foto-preview img {
+    height: 115px;
+  }
+
+  /* Botones inferiores: guardar y limpiar */
+  .botones-finales {
+    padding: 6px 4px 10px;
+    margin-top: 8px;
+  }
+
+  .botones-finales ion-row {
+    row-gap: 10px;
+  }
+
+  .botones-finales ion-col {
+    padding: 6px;
+  }
+
+  .botones-finales ion-button {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 48px;
+    margin: 4px 0;
+    font-size: 12px;
+    letter-spacing: 0;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+  }
+
+  .botones-finales ion-button::part(native) {
+    min-height: 48px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 1.3;
+    white-space: normal;
+  }
+}

@@ -24,10 +24,6 @@ export class HomeComponent implements OnInit {
     this.menuController.toggle('principal');
   }
 
-  goPerfil(): void {
-    this.router.navigate(['/perfil']);
-  }
-
   goItd(): void {
     this.router.navigate(['/itd']);
   }
@@ -48,5 +44,18 @@ export class HomeComponent implements OnInit {
     // Más adelante aquí se llamará a FirebaseAuthService.logout()
     this.router.navigate(['/']);
   }
+
+goPerfil(): void {
+  this.router.navigate(['/perfil']);
+}
+
+irARegistro(): void {
+  this.router.navigate(['/set-itd']);
+}
+
+irAHistorial(): void {
+  this.router.navigate(['/all-itd']);
+}
+
 
 }

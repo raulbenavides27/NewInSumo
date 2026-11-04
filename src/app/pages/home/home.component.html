@@ -1,43 +1,90 @@
-<ion-header >
-  <ion-toolbar>
 
+<ion-header>
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-   <ion-input
-      type="text"
-      placeholder="Buscar"
-      [(ngModel)]="searchTerm">
-    </ion-input>
+
+    <ion-title>InSumo ERP</ion-title>
+
     <ion-buttons slot="end">
       <ion-button (click)="goPerfil()">
         <ion-icon slot="icon-only" name="person-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <main class="home-container">
 
-  <div class="main_content_div">
+    <!-- PRESENTACIÓN -->
+    <section class="home-hero">
+      <div class="logo-principal">
+        <img src="assets/imgs/logo.png" alt="Logotipo InSumo ERP">
+      </div>
 
-   
-  </div>
-    <ion-card>
-    <ion-card-header>
-      <ion-card-title></ion-card-title>
+      <div class="hero-texto">
+        <h1>Bienvenido a InSumo ERP</h1>
 
-       <div class="logo_principal">
-      <img src="assets/imgs/logo.png">
-    </div>
-    </ion-card-header>
+        <h2>Gestión y control operacional</h2>
 
-    <ion-card-content>
+        <p>
+          Plataforma diseñada para facilitar el registro, administración
+          y seguimiento de informes técnicos de devolución (ITD),
+          permitiendo centralizar la información y mantener un control
+          organizado de los procesos operacionales.
+        </p>
+      </div>
+    </section>
 
+    <!-- FUNCIONALIDADES -->
+    <section class="funcionalidades">
+      <h2>¿Qué puedes realizar?</h2>
 
-  
-    </ion-card-content>
-  </ion-card>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-card class="funcionalidad-card">
+              <ion-card-content>
+                <ion-icon name="document-text-outline"></ion-icon>
+                <h3>Registro ITD</h3>
+                <p>
+                  Registra informes técnicos de devolución,
+                  productos, estados y fotografías.
+                </p>
+                <ion-button expand="block" (click)="irARegistro()">
+                  Nuevo ITD
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
 
+          <ion-col size="12" size-md="6">
+            <ion-card class="funcionalidad-card">
+              <ion-card-content>
+                <ion-icon name="clipboard-outline"></ion-icon>
+                <h3>Historial ITD</h3>
+                <p>
+                  Consulta los registros realizados y revisa
+                  la información de cada devolución.
+                </p>
+                <ion-button expand="block" fill="outline" (click)="irAHistorial()">
+                  Consultar historial
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </section>
+
+    <!-- PIE -->
+    <footer class="home-footer">
+      <strong>InSumo ERP</strong>
+      <p>Desarrollado por Raúl Benavides</p>
+      <span>Gestión y control operacional</span>
+    </footer>
+
+  </main>
 </ion-content>

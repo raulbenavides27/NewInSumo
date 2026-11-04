@@ -1,5 +1,8 @@
-import { Router } from '@angular/router';
+
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
+import { FirebaseauthService } from 'src/app/services/firebaseauth.service';
 
 @Component({
   selector: 'app-bienvenido',
@@ -8,12 +11,25 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BienvenidoPage implements OnInit {
 
-  constructor(private route: Router) {}
+  constructor(
+    private router: Router,
+    private firebaseauthService: FirebaseauthService
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {
+    this.firebaseauthService.stateAuth()
+      .pipe(take(1))
+      .subscribe(user => {
+        if (user) {
+          this.router.navigateByUrl('/home', {
+            replaceUrl: true
+          });
+        }
+      });
+  }
 
-  goToLogin() {
-    this.route.navigate(['/perfil']);
+  goToLogin(): void {
+    this.router.navigate(['/perfil']);
   }
 
 }

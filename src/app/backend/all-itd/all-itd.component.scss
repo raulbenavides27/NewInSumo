@@ -232,7 +232,16 @@ ion-header ion-toolbar ion-input {
   font-size: 18px;
 }
 
-.btn-ver {
+.acciones-itd {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-ver,
+.btn-pdf {
   font-weight: 600;
   margin: 0;
 }

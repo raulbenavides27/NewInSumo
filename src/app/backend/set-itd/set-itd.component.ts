@@ -10,6 +10,7 @@ import { Usuario } from 'src/app/models/usuario.model';
 import { SellerService } from 'src/app/services/seller.service';
 import { FirestoreService } from 'src/app/services/firestore.service';
 import { FirebaseauthService } from 'src/app/services/firebaseauth.service';
+import { FirestorageService } from 'src/app/services/firestorage.service';
 
 interface FotoSeleccionada {
   archivo: File;
@@ -34,7 +35,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly sellerService: SellerService,
     private readonly firestoreService: FirestoreService,
-    private readonly firebaseauthService: FirebaseauthService
+    private readonly firebaseauthService: FirebaseauthService,
+    private readonly firestorageService: FirestorageService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -261,13 +263,27 @@ export class SetItdComponent implements OnInit, OnDestroy {
 
       const id = this.firestoreService.getId();
 
+      // Primero se suben las fotografías a Storage y se obtienen sus URLs.
+      const fotosUrls: string[] = await Promise.all(
+        this.fotosSeleccionadas.map((foto, index) => {
+          const nombreArchivo =
+            `${Date.now()}_${index}_${foto.nombre.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+
+          return this.firestorageService.uploadImage(
+            foto.archivo,
+            `itds/${id}/fotos`,
+            nombreArchivo
+          );
+        })
+      );
+
       const registro: Itd = {
         ...this.itd,
         id,
         folio: this.itd.folio,
         fechaCreacion: new Date(),
         productos: this.itd.productos.map(producto => ({ ...producto })),
-        fotos: [...this.itd.fotos]
+        fotos: fotosUrls
       };
 
       await this.firestoreService.createDoc(registro, 'itds', id);
@@ -279,7 +295,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
       await this.prepararNuevoItd();
     } catch (error) {
       console.error('Error al guardar ITD:', error);
-      alert('No fue posible guardar el ITD. Revise la consola para más información.');
+      alert('No fue posible guardar el ITD o subir sus fotografías. Revise la conexión e inténtelo nuevamente.');
     } finally {
       this.cargando = false;
     }

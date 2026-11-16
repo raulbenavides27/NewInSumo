@@ -151,17 +151,31 @@
               Registrado
             </span>
 
-            <ion-button
-              fill="clear"
-              class="btn-ver"
-              (click)="verITD(itd)"
-            >
-              <ion-icon
-                slot="start"
-                name="eye-outline"
-              ></ion-icon>
-              Ver detalle
-            </ion-button>
+            <div class="acciones-itd">
+              <ion-button
+                fill="clear"
+                class="btn-ver"
+                (click)="verITD(itd)"
+              >
+                <ion-icon
+                  slot="start"
+                  name="eye-outline"
+                ></ion-icon>
+                Ver detalle
+              </ion-button>
+
+              <ion-button
+                fill="solid"
+                class="btn-pdf"
+                (click)="generarPDF(itd)"
+              >
+                <ion-icon
+                  slot="start"
+                  name="document-text-outline"
+                ></ion-icon>
+                Generar PDF
+              </ion-button>
+            </div>
           </div>
 
         </ion-card-content>

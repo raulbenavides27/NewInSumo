@@ -1,35 +1,36 @@
-<ion-header>
+<ion-header class="itd-header">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
 
-    <ion-input
-      type="text"
+    <ion-searchbar
+      class="buscador-itd"
       placeholder="Buscar folio, seller, documento, OC o producto"
       [(ngModel)]="searchTerm"
-      (ionInput)="filterProperties()">
-    </ion-input>
+      (ionInput)="filterProperties()"
+      debounce="150">
+    </ion-searchbar>
 
     <ion-buttons slot="end">
-      <ion-button (click)="filterProperties()">
+      <ion-button aria-label="Buscar" (click)="filterProperties()">
         <ion-icon name="search-outline"></ion-icon>
       </ion-button>
-      <ion-button (click)="goPerfil()">
+      <ion-button aria-label="Perfil" (click)="goPerfil()">
         <ion-icon slot="icon-only" name="person-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="itd-content">
   <main class="contenido-itd">
-    <section class="acciones-registro">
+    <section class="encabezado-pagina">
       <div class="subtitulo-registro">
-        <h2>Registro y seguimiento de ITD</h2>
+        <span class="sobre-titulo">GESTIÓN DE DEVOLUCIONES</span>
+        <h1>Registro y seguimiento de ITD</h1>
         <p>Consulta los registros y actualiza su gestión.</p>
       </div>
-
       <ion-button class="btn-nuevo" routerLink="/set-itd">
         <ion-icon name="add-outline" slot="start"></ion-icon>
         NUEVO ITD
@@ -37,11 +38,12 @@
     </section>
 
     <section class="resumen-listado">
-      <span><strong>{{ itdsFiltrados.length }}</strong> registros</span>
-      <span>Las gestiones nuevas se guardan en el historial sin modificar los datos originales.</span>
+      <span class="contador-registros"><strong>{{ itdsFiltrados.length }}</strong> registros</span>
+      <span class="nota-historial">Las nuevas gestiones se guardan en el historial sin modificar los datos originales.</span>
     </section>
 
-    <div class="tabla-contenedor" *ngIf="!cargando && itdsFiltrados.length > 0">
+    <!-- Vista de escritorio -->
+    <div class="tabla-contenedor vista-escritorio" *ngIf="!cargando && itdsFiltrados.length > 0">
       <table class="tabla-itd">
         <thead>
           <tr>
@@ -77,13 +79,8 @@
                   <small>SKU {{ producto.sku || '—' }} · Cant. {{ producto.cantidad }}</small>
                 </div>
               </td>
-              <td class="celda-observacion">
-                {{ itd.ultimaGestion?.observacion || 'Sin observaciones' }}
-              </td>
-              <td class="celda-compensacion">
-                {{ itd.ultimaGestion?.compensacion ?? '—' }}
-                <span *ngIf="itd.ultimaGestion">%</span>
-              </td>
+              <td class="celda-observacion">{{ itd.ultimaGestion?.observacion || 'Sin observaciones' }}</td>
+              <td class="celda-compensacion">{{ itd.ultimaGestion?.compensacion ?? '—' }}<span *ngIf="itd.ultimaGestion">%</span></td>
               <td>
                 <ion-badge [color]="estadoGestion(itd) === 'CERRADO' ? 'success' : 'warning'">
                   {{ estadoGestion(itd) === 'CERRADO' ? 'Cerrado' : 'Abierto' }}
@@ -95,71 +92,81 @@
                   {{ editandoItdId === itd.id ? 'Cerrar' : 'Gestionar' }}
                 </ion-button>
                 <ion-button size="small" fill="clear" (click)="generarPDF(itd)">
-                  <ion-icon slot="start" name="document-text-outline"></ion-icon>
-                  PDF
+                  <ion-icon slot="start" name="document-text-outline"></ion-icon>PDF
                 </ion-button>
               </td>
             </tr>
-
             <tr class="fila-edicion" *ngIf="editandoItdId === itd.id">
               <td colspan="8">
-                <div class="panel-gestion">
-                  <div class="panel-gestion-titulo">
-                    <div>
-                      <strong>Gestión del ITD {{ itd.folio }}</strong>
-                      <p>Los cambios se registrarán como una nueva entrada del historial.</p>
-                    </div>
-                    <ion-button fill="clear" size="small" (click)="cancelarGestion()">Cancelar</ion-button>
-                  </div>
-
-                  <div class="campos-gestion">
-                    <div class="campo-gestion observacion-gestion">
-                      <ion-label>Observaciones</ion-label>
-                      <ion-textarea
-                        [(ngModel)]="gestionForm.observacion"
-                        rows="2"
-                        autoGrow="true"
-                        placeholder="Ingresa el resultado o comentario de la gestión">
-                      </ion-textarea>
-                    </div>
-
-                    <div class="campo-gestion">
-                      <ion-label>Compensación (%)</ion-label>
-                      <ion-input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="any"
-                        [(ngModel)]="gestionForm.compensacion"
-                        placeholder="0 a 100">
-                      </ion-input>
-                    </div>
-
-                    <div class="campo-gestion">
-                      <ion-label>Estado de gestión</ion-label>
-                      <ion-select interface="popover" [(ngModel)]="gestionForm.estadoGestion">
-                        <ion-select-option value="ABIERTO">Abierto</ion-select-option>
-                        <ion-select-option value="CERRADO">Cerrado</ion-select-option>
-                      </ion-select>
-                    </div>
-                  </div>
-
-                  <div class="acciones-gestion">
-                    <ion-button
-                      [disabled]="guardandoGestion"
-                      (click)="guardarGestion(itd)">
-                      <ion-spinner *ngIf="guardandoGestion" name="crescent"></ion-spinner>
-                      <ion-icon *ngIf="!guardandoGestion" slot="start" name="save-outline"></ion-icon>
-                      Guardar gestión
-                    </ion-button>
-                  </div>
-                </div>
+                <ng-container *ngTemplateOutlet="editorGestion; context: {$implicit: itd}"></ng-container>
               </td>
             </tr>
           </ng-container>
         </tbody>
       </table>
     </div>
+
+    <!-- Vista móvil: tarjetas, sin desplazamiento horizontal -->
+    <section class="lista-movil" *ngIf="!cargando && itdsFiltrados.length > 0">
+      <article class="tarjeta-itd" *ngFor="let itd of itdsFiltrados">
+        <div class="tarjeta-cabecera">
+          <div>
+            <span class="etiqueta-folio">REGISTRO ITD</span>
+            <h2>ITD {{ itd.folio | number:'2.0-0' }}</h2>
+            <p>{{ itd.fechaDeclarada }}</p>
+          </div>
+          <ion-badge [color]="estadoGestion(itd) === 'CERRADO' ? 'success' : 'warning'">
+            {{ estadoGestion(itd) === 'CERRADO' ? 'Cerrado' : 'Abierto' }}
+          </ion-badge>
+        </div>
+
+        <div class="tarjeta-datos">
+          <div class="dato-movil">
+            <span>Seller</span>
+            <strong>{{ itd.sellerNombre }}</strong>
+            <small *ngIf="itd.numeroSeguimiento">Seguimiento: {{ itd.numeroSeguimiento }}</small>
+          </div>
+          <div class="dato-movil">
+            <span>Documento / OC</span>
+            <strong>Doc.: {{ itd.documento || '—' }}</strong>
+            <small>OC: {{ itd.ocPedido || '—' }}</small>
+          </div>
+          <div class="dato-movil dato-productos">
+            <span>Productos</span>
+            <div *ngFor="let producto of itd.productos">
+              <strong>{{ producto.descripcion || 'Sin descripción' }}</strong>
+              <small>SKU {{ producto.sku || '—' }} · Cant. {{ producto.cantidad }}</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="tarjeta-gestion">
+          <div class="dato-movil">
+            <span>Observaciones</span>
+            <strong class="texto-observacion">{{ itd.ultimaGestion?.observacion || 'Sin observaciones' }}</strong>
+          </div>
+          <div class="dato-movil compensacion-movil">
+            <span>Compensación</span>
+            <strong>{{ itd.ultimaGestion?.compensacion ?? '—' }}<ng-container *ngIf="itd.ultimaGestion">%</ng-container></strong>
+          </div>
+        </div>
+
+        <div class="acciones-movil">
+          <ion-button expand="block" fill="outline" (click)="abrirGestion(itd)">
+            <ion-icon slot="start" name="create-outline"></ion-icon>
+            {{ editandoItdId === itd.id ? 'Cerrar edición' : 'Gestionar ITD' }}
+          </ion-button>
+          <ion-button expand="block" fill="clear" (click)="generarPDF(itd)">
+            <ion-icon slot="start" name="document-text-outline"></ion-icon>
+            Ver PDF
+          </ion-button>
+        </div>
+
+        <ng-container *ngIf="editandoItdId === itd.id">
+          <ng-container *ngTemplateOutlet="editorGestion; context: {$implicit: itd}"></ng-container>
+        </ng-container>
+      </article>
+    </section>
 
     <div class="sin-registros" *ngIf="itdsFiltrados.length === 0 && !cargando">
       <ion-icon name="document-text-outline"></ion-icon>
@@ -172,4 +179,43 @@
       <p>Cargando registros...</p>
     </div>
   </main>
+
+  <ng-template #editorGestion let-itd>
+    <div class="panel-gestion">
+      <div class="panel-gestion-titulo">
+        <div>
+          <strong>Gestión del ITD {{ itd.folio }}</strong>
+          <p>Los cambios se registrarán como una nueva entrada del historial.</p>
+        </div>
+        <ion-button fill="clear" size="small" (click)="cancelarGestion()">Cancelar</ion-button>
+      </div>
+
+      <div class="campos-gestion">
+        <div class="campo-gestion observacion-gestion">
+          <ion-label>Observaciones</ion-label>
+          <ion-textarea [(ngModel)]="gestionForm.observacion" rows="3" autoGrow="true"
+            placeholder="Ingresa el resultado o comentario de la gestión"></ion-textarea>
+        </div>
+        <div class="campo-gestion">
+          <ion-label>Compensación (%)</ion-label>
+          <ion-input type="number" min="0" max="100" step="any"
+            [(ngModel)]="gestionForm.compensacion" placeholder="0 a 100"></ion-input>
+        </div>
+        <div class="campo-gestion">
+          <ion-label>Estado de gestión</ion-label>
+          <ion-select interface="popover" [(ngModel)]="gestionForm.estadoGestion">
+            <ion-select-option value="ABIERTO">Abierto</ion-select-option>
+            <ion-select-option value="CERRADO">Cerrado</ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+      <div class="acciones-gestion">
+        <ion-button [disabled]="guardandoGestion" (click)="guardarGestion(itd)">
+          <ion-spinner *ngIf="guardandoGestion" name="crescent"></ion-spinner>
+          <ion-icon *ngIf="!guardandoGestion" slot="start" name="save-outline"></ion-icon>
+          Guardar gestión
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
 </ion-content>

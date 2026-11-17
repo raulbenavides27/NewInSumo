@@ -3,8 +3,18 @@ import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
-import { Itd } from 'src/app/models/itd.model';
+import {
+  EstadoGestionItd,
+  HistorialItd,
+  Itd
+} from 'src/app/models/itd.model';
 import { FirestoreService } from 'src/app/services/firestore.service';
+import { FirebaseauthService } from 'src/app/services/firebaseauth.service';
+import { GestionItdService } from 'src/app/services/gestion-itd.service';
+
+type ItdListado = Itd & {
+  ultimaGestion?: HistorialItd;
+};
 
 @Component({
   selector: 'app-all-itd',
@@ -12,18 +22,25 @@ import { FirestoreService } from 'src/app/services/firestore.service';
   styleUrls: ['./all-itd.component.scss']
 })
 export class AllItdComponent implements OnInit {
+  searchTerm = '';
+  itds: ItdListado[] = [];
+  itdsFiltrados: ItdListado[] = [];
+  cargando = false;
+  guardandoGestion = false;
+  editandoItdId: string | null = null;
 
-  searchTerm: string = '';
-
-  itds: Itd[] = [];
-  itdsFiltrados: Itd[] = [];
-
-  cargando: boolean = false;
+  gestionForm: {
+    observacion: string;
+    compensacion: number;
+    estadoGestion: EstadoGestionItd;
+  } = this.formularioVacio();
 
   constructor(
     public menucontroller: MenuController,
     private router: Router,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private gestionItdService: GestionItdService,
+    private firebaseAuth: FirebaseauthService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -34,16 +51,33 @@ export class AllItdComponent implements OnInit {
     this.cargando = true;
 
     try {
-      const itds = await firstValueFrom(
-        this.firestoreService.getCollection<Itd>('itds')
-      );
+      const [registros, gestiones] = await Promise.all([
+        firstValueFrom(this.firestoreService.getCollection<Itd>('itds')),
+        firstValueFrom(this.gestionItdService.getAll())
+      ]);
 
-      this.itds = [...itds].sort((a, b) => {
-        return Number(b.folio) - Number(a.folio);
-      });
+      const ultimaGestionPorItd = new Map<string, HistorialItd>();
 
-      this.itdsFiltrados = [...this.itds];
+      gestiones
+        .map(gestion => ({
+          ...gestion,
+          fechaGestion: this.convertirFecha(gestion.fechaGestion)
+        }))
+        .sort((a, b) => b.fechaGestion.getTime() - a.fechaGestion.getTime())
+        .forEach(gestion => {
+          if (!ultimaGestionPorItd.has(gestion.itdId)) {
+            ultimaGestionPorItd.set(gestion.itdId, gestion);
+          }
+        });
 
+      this.itds = registros
+        .map(itd => ({
+          ...itd,
+          ultimaGestion: ultimaGestionPorItd.get(itd.id)
+        }))
+        .sort((a, b) => Number(b.folio) - Number(a.folio));
+
+      this.filterProperties();
     } catch (error) {
       console.error('Error al cargar los ITD:', error);
       alert('No fue posible cargar el registro de ITD.');
@@ -60,15 +94,74 @@ export class AllItdComponent implements OnInit {
       return;
     }
 
-    this.itdsFiltrados = this.itds.filter((itd) => {
-      return (
-        String(itd.folio).toLowerCase().includes(termino) ||
-        (itd.sellerNombre || '').toLowerCase().includes(termino) ||
-        (itd.documento || '').toLowerCase().includes(termino) ||
-        (itd.ocPedido || '').toLowerCase().includes(termino) ||
-        (itd.numeroSeguimiento || '').toLowerCase().includes(termino)
-      );
-    });
+    this.itdsFiltrados = this.itds.filter(itd =>
+      String(itd.folio).toLowerCase().includes(termino) ||
+      (itd.sellerNombre || '').toLowerCase().includes(termino) ||
+      (itd.documento || '').toLowerCase().includes(termino) ||
+      (itd.ocPedido || '').toLowerCase().includes(termino) ||
+      (itd.numeroSeguimiento || '').toLowerCase().includes(termino) ||
+      (itd.productos || []).some(producto =>
+        (producto.sku || '').toLowerCase().includes(termino) ||
+        (producto.descripcion || '').toLowerCase().includes(termino)
+      )
+    );
+  }
+
+  abrirGestion(itd: ItdListado): void {
+    if (this.editandoItdId === itd.id) {
+      this.cancelarGestion();
+      return;
+    }
+
+    this.editandoItdId = itd.id;
+    this.gestionForm = {
+      observacion: itd.ultimaGestion?.observacion || '',
+      compensacion: Number(itd.ultimaGestion?.compensacion ?? 0),
+      estadoGestion: itd.ultimaGestion?.estadoGestion || 'ABIERTO'
+    };
+  }
+
+  cancelarGestion(): void {
+    this.editandoItdId = null;
+    this.gestionForm = this.formularioVacio();
+  }
+
+  async guardarGestion(itd: ItdListado): Promise<void> {
+    const compensacion = Number(this.gestionForm.compensacion);
+
+    if (!Number.isFinite(compensacion) || compensacion < 0 || compensacion > 100) {
+      alert('La compensación debe ser un valor entre 0 y 100.');
+      return;
+    }
+
+    this.guardandoGestion = true;
+
+    try {
+      const usuario = await this.firebaseAuth.auth.currentUser;
+      await this.gestionItdService.create({
+        id: '',
+        itdId: itd.id,
+        fechaGestion: new Date(),
+        observacion: this.gestionForm.observacion.trim(),
+        compensacion,
+        estadoGestion: this.gestionForm.estadoGestion,
+        responsableGestion: usuario?.email || 'Usuario',
+        cargoGestion: ''
+      });
+
+      this.cancelarGestion();
+      await this.cargarITDs();
+      alert('La gestión del ITD se guardó correctamente.');
+    } catch (error) {
+      console.error('Error al guardar la gestión del ITD:', error);
+      alert('No fue posible guardar la gestión. Inténtalo nuevamente.');
+    } finally {
+      this.guardandoGestion = false;
+    }
+  }
+
+  estadoGestion(itd: ItdListado): EstadoGestionItd {
+    return itd.ultimaGestion?.estadoGestion || 'ABIERTO';
   }
 
   goPerfil(): void {
@@ -79,8 +172,27 @@ export class AllItdComponent implements OnInit {
     this.menucontroller.toggle('principal');
   }
 
-  verITD(itd: Itd): void {
-    console.log('ITD seleccionado:', itd);
+  verITD(itd: ItdListado): void {
+    this.abrirGestion(itd);
+  }
+
+  private formularioVacio(): {
+    observacion: string;
+    compensacion: number;
+    estadoGestion: EstadoGestionItd;
+  } {
+    return {
+      observacion: '',
+      compensacion: 0,
+      estadoGestion: 'ABIERTO'
+    };
+  }
+
+  private convertirFecha(fecha: any): Date {
+    if (fecha && typeof fecha.toDate === 'function') {
+      return fecha.toDate();
+    }
+    return fecha instanceof Date ? fecha : new Date(fecha || 0);
   }
 
   generarPDF(itd: Itd): void {
@@ -166,13 +278,7 @@ export class AllItdComponent implements OnInit {
         <style>
           @page { size: A4; margin: 12mm; }
           * { box-sizing: border-box; }
-          body {
-            margin: 0;
-            color: #171717;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10pt;
-            line-height: 1.35;
-          }
+          body { margin: 0; color: #171717; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.35; }
           h1 { margin: 16px 0 12px; font-size: 17pt; }
           h2 { margin: 18px 0 8px; font-size: 12pt; }
           .cabecera { display: flex; justify-content: space-between; gap: 16px; }
@@ -185,22 +291,8 @@ export class AllItdComponent implements OnInit {
           .centrado { text-align: center; }
           .devolucion { margin: 16px 0; }
           .detalle { margin-top: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
-          .galeria {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 8mm;
-            margin-top: 10mm;
-          }
-          .foto {
-            height: 66mm;
-            margin: 0;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2mm;
-            break-inside: avoid;
-          }
+          .galeria { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8mm; margin-top: 10mm; }
+          .foto { height: 66mm; margin: 0; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; padding: 2mm; break-inside: avoid; }
           .foto img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
           .pagina-fotos { break-before: page; page-break-before: always; }
           .pagina-fotos h2 { margin-top: 0; }
@@ -208,9 +300,7 @@ export class AllItdComponent implements OnInit {
           .firma strong, .firma span { display: block; }
           .pie { margin-top: 14mm; font-weight: bold; }
           tr, figure { break-inside: avoid; }
-          @media screen {
-            body { max-width: 210mm; min-height: 297mm; margin: 16px auto; padding: 12mm; box-shadow: 0 0 8px #bbb; }
-          }
+          @media screen { body { max-width: 210mm; min-height: 297mm; margin: 16px auto; padding: 12mm; box-shadow: 0 0 8px #bbb; } }
         </style>
       </head>
       <body>
@@ -218,39 +308,17 @@ export class AllItdComponent implements OnInit {
           <div>${escapar(fecha(itd.fechaDeclarada))}</div>
           <div class="folio">Folio: ${escapar(String(itd.folio).padStart(4, '0'))}</div>
         </div>
-
         <div class="destinatario">Atención a ${escapar(itd.sellerNombre)}</div>
         <h1>Informe de recepción de producto</h1>
         <p class="fecha-recepcion">Fecha declarada: ${escapar(fecha(itd.fechaDeclarada))}</p>
-
         <table>
-          <thead>
-            <tr>
-              <th>SKU</th>
-              <th>Descripción</th>
-              <th>Cantidad</th>
-              <th>Documento</th>
-              <th>OC / Pedido</th>
-              <th>N.º Seguimiento</th>
-              <th>Obs.</th>
-            </tr>
-          </thead>
+          <thead><tr><th>SKU</th><th>Descripción</th><th>Cantidad</th><th>Documento</th><th>OC / Pedido</th><th>N.º Seguimiento</th><th>Obs.</th></tr></thead>
           <tbody>${productos}</tbody>
         </table>
-
         <p class="devolucion">Esto corresponde a una devolución realizada por: <strong>${escapar(itd.sellerNombre)}</strong></p>
-
-        <section class="detalle">
-          <h2>Detalle del estado</h2>
-          <p>${escapar(itd.detalleEstado || 'Sin detalle informado.')}</p>
-        </section>
-
+        <section class="detalle"><h2>Detalle del estado</h2><p>${escapar(itd.detalleEstado || 'Sin detalle informado.')}</p></section>
         ${crearGaleria(fotos.slice(0, 4))}
-
-        <div class="firma">
-          <strong>${escapar(itd.responsableCreacion)}</strong>
-          <span>${escapar(itd.cargoCreacion)}</span>
-        </div>
+        <div class="firma"><strong>${escapar(itd.responsableCreacion)}</strong><span>${escapar(itd.cargoCreacion)}</span></div>
         ${paginasFotograficas.join('')}
       </body>
       </html>

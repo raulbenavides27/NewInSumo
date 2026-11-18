@@ -1,6 +1,6 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { Itd, ItdProducto } from 'src/app/models/itd.model';
@@ -30,9 +30,16 @@ export class SetItdComponent implements OnInit, OnDestroy {
 
   fotosSeleccionadas: FotoSeleccionada[] = [];
   cargando = false;
+  modoEdicion = false;
+  motivoEdicion = '';
+  private uidActual = '';
+  private nombreUsuarioActual = '';
+  private cargoUsuarioActual = '';
+  private rolUsuarioActual = '';
 
   constructor(
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly sellerService: SellerService,
     private readonly firestoreService: FirestoreService,
     private readonly firebaseauthService: FirebaseauthService,
@@ -42,7 +49,12 @@ export class SetItdComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.cargarSellers();
     await this.cargarResponsable();
-    await this.cargarSiguienteFolio();
+    const idEdicion = this.route.snapshot.queryParamMap.get('editar');
+    if (idEdicion) {
+      await this.cargarItdParaEditar(idEdicion);
+    } else {
+      await this.cargarSiguienteFolio();
+    }
   }
 
   ngOnDestroy(): void {
@@ -67,6 +79,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
   private async cargarResponsable(): Promise<void> {
     try {
       const uid = await this.firebaseauthService.getUid();
+      this.uidActual = uid || '';
 
       if (!uid) {
         this.itd.responsableCreacion = '';
@@ -84,6 +97,9 @@ export class SetItdComponent implements OnInit, OnDestroy {
         return;
       }
 
+      this.nombreUsuarioActual = usuario.nombre || '';
+      this.cargoUsuarioActual = usuario.cargo || '';
+      this.rolUsuarioActual = usuario.rol || '';
       this.itd.responsableCreacion = usuario.nombre || '';
       this.itd.cargoCreacion = usuario.cargo || 'Sin cargo asignado';
     } catch (error) {
@@ -247,8 +263,84 @@ export class SetItdComponent implements OnInit, OnDestroy {
     this.fotosSeleccionadas = [];
   }
 
+  private async cargarItdParaEditar(id: string): Promise<void> {
+    this.cargando = true;
+    try {
+      const registro = await firstValueFrom(this.firestoreService.getDoc<Itd>('itds', id));
+      if (!registro) {
+        alert('No se encontró el ITD solicitado.');
+        await this.router.navigate(['/all-itd']);
+        return;
+      }
+      if (registro.ultimaGestion?.estadoGestion === 'CERRADO' && this.rolUsuarioActual !== 'ADMIN' && this.rolUsuarioActual !== 'SUPERVISOR') {
+        alert('Este ITD está cerrado. Solo un administrador o supervisor puede editarlo.');
+        await this.router.navigate(['/all-itd']);
+        return;
+      }
+      this.itd = { ...registro, fechaCreacion: this.convertirFecha(registro.fechaCreacion), productos: (registro.productos || []).map(producto => ({ ...producto })), fotos: [...(registro.fotos || [])] };
+      this.modoEdicion = true;
+    } catch (error) {
+      console.error('Error al cargar ITD para edición:', error);
+      alert('No fue posible cargar el ITD para editarlo.');
+      await this.router.navigate(['/all-itd']);
+    } finally {
+      this.cargando = false;
+    }
+  }
+
+  private convertirFecha(fecha: any): Date {
+    if (fecha && typeof fecha.toDate === 'function') return fecha.toDate();
+    return fecha instanceof Date ? fecha : new Date(fecha || 0);
+  }
+
+  private async guardarEdicion(): Promise<void> {
+    const motivo = this.motivoEdicion.trim();
+    if (!motivo) { alert('Debes indicar el motivo de la corrección.'); return; }
+    const original = await firstValueFrom(this.firestoreService.getDoc<Itd>('itds', this.itd.id));
+    if (!original) throw new Error('El ITD ya no existe.');
+    const fotosNuevas = await Promise.all(this.fotosSeleccionadas.map((foto, index) => {
+      const nombre = Date.now() + '_' + index + '_' + foto.nombre.replace(/[^a-zA-Z0-9._-]/g, '_');
+      return this.firestorageService.uploadImage(foto.archivo, 'itds/' + this.itd.id + '/fotos', nombre);
+    }));
+    const actualizado: Itd = {
+      ...this.itd,
+      id: original.id,
+      folio: original.folio,
+      fechaCreacion: this.convertirFecha(original.fechaCreacion),
+      responsableCreacion: original.responsableCreacion,
+      cargoCreacion: original.cargoCreacion,
+      fotos: [...(original.fotos || []), ...fotosNuevas],
+      productos: this.itd.productos.map(producto => ({ ...producto }))
+    };
+    const campos = ['fechaDeclarada','sellerId','sellerNombre','sellerCodigo','documento','ocPedido','numeroSeguimiento','productos','detalleEstado','fotos'];
+    const cambios: any = {};
+    campos.forEach(campo => {
+      const antes = (original as any)[campo];
+      const despues = (actualizado as any)[campo];
+      if (JSON.stringify(antes) !== JSON.stringify(despues)) cambios[campo] = { antes, despues };
+    });
+    await this.firestoreService.updateDoc<Itd>({} as any, 'itds', original.id);
+    await this.firestoreService.updateDoc<Itd>(actualizado, 'itds', original.id);
+    await this.firestoreService.createDoc({
+      id: this.firestoreService.getId(), itdId: original.id, folio: original.folio,
+      fechaModificacion: new Date(), motivo, uidUsuario: this.uidActual,
+      usuario: this.nombreUsuarioActual, cargo: this.cargoUsuarioActual, rol: this.rolUsuarioActual, cambios
+    }, 'historial_ediciones_itd', this.firestoreService.getId());
+    alert('ITD ' + String(original.folio).padStart(2, '0') + ' actualizado correctamente.');
+    this.liberarVistasPrevias();
+    await this.router.navigate(['/all-itd']);
+  }
+
   async guardarITD(): Promise<void> {
     if (!this.validarFormulario()) {
+      return;
+    }
+    if (this.modoEdicion) {
+      if (this.cargando) return;
+      this.cargando = true;
+      try { await this.guardarEdicion(); }
+      catch (error) { console.error('Error al actualizar ITD:', error); alert('No fue posible actualizar el ITD.'); }
+      finally { this.cargando = false; }
       return;
     }
 
@@ -350,6 +442,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
   }
 
   async cancelar(): Promise<void> {
+    if (this.modoEdicion) { await this.router.navigate(['/all-itd']); return; }
     await this.prepararNuevoItd();
   }
 

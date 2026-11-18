@@ -253,15 +253,21 @@ export class AllItdComponent implements OnInit {
     }
 
     const encabezados = ['Folio', 'Fecha declarada', 'Fecha creación', 'Seller', 'Código seller', 'Documento', 'OC/Pedido', 'Número seguimiento', 'SKU', 'Descripción producto', 'Cantidad', 'Estado producto', 'Observaciones gestión', 'Compensación (%)', 'Estado gestión', 'Responsable creación', 'Cargo creación', 'Detalle estado'];
-    const filas = registros.flatMap(itd => (itd.productos?.length ? itd.productos : [{ sku: '', descripcion: '', cantidad: '', estadoProducto: '' }]).map(producto => [
-      itd.folio, itd.fechaDeclarada, this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'),
-      itd.sellerNombre, itd.sellerCodigo ?? '', itd.documento, itd.ocPedido, itd.numeroSeguimiento,
-      producto.sku, producto.descripcion, producto.cantidad, producto.estadoProducto,
-      itd.ultimaGestion?.observacion || '', itd.ultimaGestion?.compensacion ?? '',
-      itd.ultimaGestion?.estadoGestion || 'ABIERTO', itd.responsableCreacion, itd.cargoCreacion, itd.detalleEstado
-    ]));
+    const filas: unknown[][] = [];
+    registros.forEach(itd => {
+      const productos = itd.productos?.length ? itd.productos : [null];
+      productos.forEach(producto => {
+        filas.push([
+          itd.folio, itd.fechaDeclarada, this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'),
+          itd.sellerNombre, itd.sellerCodigo ?? '', itd.documento, itd.ocPedido, itd.numeroSeguimiento,
+          producto?.sku ?? '', producto?.descripcion ?? '', producto?.cantidad ?? '', producto?.estadoProducto ?? '',
+          itd.ultimaGestion?.observacion || '', itd.ultimaGestion?.compensacion ?? '',
+          itd.ultimaGestion?.estadoGestion || 'ABIERTO', itd.responsableCreacion, itd.cargoCreacion, itd.detalleEstado
+        ]);
+      });
+    });
     const csv = [encabezados, ...filas].map(fila =>
-      fila.map(valor => '"' + String(valor ?? '').replace(/"/g, '""') + '"').join(';')
+      fila.map((valor: unknown) => '"' + String(valor ?? '').replace(/"/g, '""') + '"').join(';')
     ).join('\r\n');
     const blob = new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);

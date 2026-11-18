@@ -239,7 +239,7 @@ export class AllItdComponent implements OnInit {
     if (marcado) this.seleccionadosIds.add(itd.id);
     else this.seleccionadosIds.delete(itd.id);
     this.seleccionadosIds = new Set(this.seleccionadosIds);
-
+    this.changeDetector.detectChanges();
   }
 
   limpiarSeleccion(): void {

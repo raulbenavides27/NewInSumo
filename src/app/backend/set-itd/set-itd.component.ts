@@ -30,6 +30,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
 
   fotosSeleccionadas: FotoSeleccionada[] = [];
   fotosExistentes: string[] = [];
+  fotosConError = new Set<string>();
   cargando = false;
   modoEdicion = false;
   motivoEdicion = '';
@@ -276,8 +277,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
       const gestiones = await firstValueFrom(this.firestoreService.getCollection<HistorialItd>('gestiones_itd'));
       const ultimaGestion = gestiones.filter(gestion => gestion.itdId === id)
         .sort((a, b) => this.convertirFecha(b.fechaGestion).getTime() - this.convertirFecha(a.fechaGestion).getTime())[0];
-      if (ultimaGestion?.estadoGestion === 'CERRADO' && this.rolUsuarioActual !== 'ADMIN' && this.rolUsuarioActual !== 'SUPERVISOR') {
-        alert('Este ITD está cerrado. Solo un administrador o supervisor puede editarlo.');
+      if (ultimaGestion?.estadoGestion === 'CERRADO') {
+        alert('Este ITD está cerrado y no admite modificaciones.');
         await this.router.navigate(['/all-itd']);
         return;
       }
@@ -293,6 +294,16 @@ export class SetItdComponent implements OnInit, OnDestroy {
     }
   }
 
+  marcarFotoNoDisponible(url: string): void {
+    this.fotosConError.add(url);
+  }
+
+  quitarFotoExistente(url: string): void {
+    this.fotosExistentes = this.fotosExistentes.filter(foto => foto !== url);
+    this.itd.fotos = this.itd.fotos.filter(foto => foto !== url);
+    this.fotosConError.delete(url);
+  }
+
   private convertirFecha(fecha: any): Date {
     if (fecha && typeof fecha.toDate === 'function') return fecha.toDate();
     return fecha instanceof Date ? fecha : new Date(fecha || 0);
@@ -303,6 +314,14 @@ export class SetItdComponent implements OnInit, OnDestroy {
     if (!motivo) { alert('Debes indicar el motivo de la corrección.'); return; }
     const original = await firstValueFrom(this.firestoreService.getDoc<Itd>('itds', this.itd.id));
     if (!original) throw new Error('El ITD ya no existe.');
+    const gestionesActuales = await firstValueFrom(this.firestoreService.getCollection<HistorialItd>('gestiones_itd'));
+    const gestionActual = gestionesActuales.filter(gestion => gestion.itdId === original.id)
+      .sort((a, b) => this.convertirFecha(b.fechaGestion).getTime() - this.convertirFecha(a.fechaGestion).getTime())[0];
+    if (gestionActual?.estadoGestion === 'CERRADO') {
+      alert('Este ITD fue cerrado y ya no admite modificaciones.');
+      await this.router.navigate(['/all-itd']);
+      return;
+    }
     const fotosNuevas = await Promise.all(this.fotosSeleccionadas.map((foto, index) => {
       const nombre = Date.now() + '_' + index + '_' + foto.nombre.replace(/[^a-zA-Z0-9._-]/g, '_');
       return this.firestorageService.uploadImage(foto.archivo, 'itds/' + this.itd.id + '/fotos', nombre);
@@ -314,7 +333,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
       fechaCreacion: this.convertirFecha(original.fechaCreacion),
       responsableCreacion: original.responsableCreacion,
       cargoCreacion: original.cargoCreacion,
-      fotos: [...(original.fotos || []), ...fotosNuevas],
+      fotos: [...this.fotosExistentes, ...fotosNuevas],
       productos: this.itd.productos.map(producto => ({ ...producto }))
     };
     const campos = ['fechaDeclarada','sellerId','sellerNombre','sellerCodigo','documento','ocPedido','numeroSeguimiento','productos','detalleEstado','fotos'];
@@ -325,6 +344,11 @@ export class SetItdComponent implements OnInit, OnDestroy {
       if (JSON.stringify(antes) !== JSON.stringify(despues)) cambios[campo] = { antes, despues };
     });
     await this.firestoreService.updateDoc<Itd>(actualizado, 'itds', original.id);
+    const fotosEliminadas = (original.fotos || []).filter(url => !this.fotosExistentes.includes(url));
+    for (const url of fotosEliminadas) {
+      try { await this.firestorageService.deleteImage(url); }
+      catch (error) { console.warn('No se pudo eliminar el archivo de Storage:', url, error); }
+    }
     const idHistorial = this.firestoreService.getId();
     await this.firestoreService.createDoc({
       id: idHistorial, itdId: original.id, folio: original.folio,

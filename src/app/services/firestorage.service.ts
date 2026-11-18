@@ -26,4 +26,11 @@ export class FirestorageService {
       throw error;
     }
   }
+
+  async deleteImage(downloadUrl: string): Promise<void> {
+    if (!downloadUrl || (!downloadUrl.startsWith('https://') && !downloadUrl.startsWith('http://') && !downloadUrl.startsWith('gs://'))) {
+      return;
+    }
+    await this.FireStorage.storage.refFromURL(downloadUrl).delete();
+  }
 }

@@ -31,6 +31,14 @@
         <h1>Registro y seguimiento de ITD</h1>
         <p>Consulta los registros y actualiza su gestión.</p>
       </div>
+      <ion-button fill="outline" (click)="toggleModoSeleccion()">
+        <ion-icon name="checkbox-outline" slot="start"></ion-icon>
+        {{ modoSeleccion ? 'Finalizar selección' : 'Seleccionar' }}
+      </ion-button>
+      <ion-button fill="outline" (click)="exportarExcel()">
+        <ion-icon name="download-outline" slot="start"></ion-icon>
+        Exportar Excel
+      </ion-button>
       <ion-button class="btn-nuevo" routerLink="/set-itd">
         <ion-icon name="add-outline" slot="start"></ion-icon>
         NUEVO ITD
@@ -38,7 +46,10 @@
     </section>
 
     <section class="resumen-listado">
-      <span class="contador-registros"><strong>{{ itdsFiltrados.length }}</strong> registros</span>
+      <span class="contador-registros"><strong>{{ itdsFiltrados.length }}</strong> registros · {{ seleccionadosIds.size }} seleccionados</span>
+      <ion-item lines="none" class="filtro-estado"><ion-label>Estado</ion-label><ion-select interface="popover" [(ngModel)]="filtroEstado" (ionChange)="filterProperties()"><ion-select-option value="TODOS">Todos</ion-select-option><ion-select-option value="ABIERTO">Abiertos</ion-select-option><ion-select-option value="CERRADO">Cerrados</ion-select-option></ion-select></ion-item>
+      <ion-button *ngIf="modoSeleccion" size="small" fill="clear" (click)="seleccionarVisibles(true)">Seleccionar visibles</ion-button>
+      <ion-button *ngIf="modoSeleccion" size="small" fill="clear" (click)="seleccionarVisibles(false)">Limpiar selección</ion-button>
       <span class="nota-historial">Las nuevas gestiones se guardan en el historial sin modificar los datos originales.</span>
     </section>
 
@@ -47,7 +58,8 @@
       <table class="tabla-itd">
         <thead>
           <tr>
-            <th>Folio / Fecha</th>
+            <th *ngIf="modoSeleccion"><ion-checkbox (ionChange)="seleccionarVisibles($event.detail.checked)"></ion-checkbox></th>
+            <th (click)="ordenarPor('folio')" class="th-ordenable">Folio / Fecha ↕</th>
             <th>Seller</th>
             <th>Documento / OC</th>
             <th>Productos</th>
@@ -60,6 +72,7 @@
         <tbody>
           <ng-container *ngFor="let itd of itdsFiltrados">
             <tr>
+              <td *ngIf="modoSeleccion"><ion-checkbox [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $event.detail.checked)"></ion-checkbox></td>
               <td class="celda-folio">
                 <strong>ITD {{ itd.folio | number:'2.0-0' }}</strong>
                 <span>{{ itd.fechaDeclarada }}</span>
@@ -97,7 +110,7 @@
               </td>
             </tr>
             <tr class="fila-edicion" *ngIf="editandoItdId === itd.id">
-              <td colspan="8">
+              <td [attr.colspan]="modoSeleccion ? 9 : 8">
                 <ng-container *ngTemplateOutlet="editorGestion; context: {$implicit: itd}"></ng-container>
               </td>
             </tr>
@@ -109,6 +122,7 @@
     <!-- Vista móvil: tarjetas, sin desplazamiento horizontal -->
     <section class="lista-movil" *ngIf="!cargando && itdsFiltrados.length > 0">
       <article class="tarjeta-itd" *ngFor="let itd of itdsFiltrados">
+        <ion-item lines="none" *ngIf="modoSeleccion"><ion-checkbox slot="start" [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $event.detail.checked)"></ion-checkbox><ion-label>Seleccionar ITD {{ itd.folio }}</ion-label></ion-item>
         <div class="tarjeta-cabecera">
           <div>
             <span class="etiqueta-folio">REGISTRO ITD</span>

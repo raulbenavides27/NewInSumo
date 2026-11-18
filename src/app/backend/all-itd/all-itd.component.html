@@ -39,7 +39,7 @@
         <ion-icon name="download-outline" slot="start"></ion-icon>
         Exportar CSV
       </ion-button>
-      <ion-button fill="outline" [disabled]="totalSeleccionados === 0" (click)="generarPDFSeleccionados()">
+      <ion-button fill="outline" [disabled]="contarSeleccionadosVisibles() === 0" (click)="generarPDFSeleccionados()">
         <ion-icon name="document-text-outline" slot="start"></ion-icon>
         PDF seleccionados
       </ion-button>
@@ -50,7 +50,7 @@
     </section>
 
     <section class="resumen-listado">
-      <span class="contador-registros"><strong>{{ itds.length }}</strong> registros totales · <strong>{{ seleccionadosIds.size }}</strong> seleccionados</span>
+      <span class="contador-registros"><strong>{{ contarRegistrosVisibles() }}</strong> registros totales · <strong>{{ contarSeleccionadosVisibles() }}</strong> seleccionados</span>
       <span class="nota-historial">Las nuevas gestiones se guardan en el historial sin modificar los datos originales.</span>
     </section>
 
@@ -62,7 +62,7 @@
             <th *ngIf="modoSeleccion" class="th-seleccion">
               <ion-checkbox
                 [checked]="todosVisiblesSeleccionados()"
-                [indeterminate]="totalSeleccionados > 0 && !todosVisiblesSeleccionados()"
+                [indeterminate]="contarSeleccionadosVisibles() > 0 && !todosVisiblesSeleccionados()"
                 (ionChange)="cambiarSeleccionVisibles($any($event).detail.checked)"
                 aria-label="Seleccionar o desmarcar todos los ITD visibles">
               </ion-checkbox>

@@ -30,6 +30,7 @@ export class AllItdComponent implements OnInit {
   editandoItdId: string | null = null;
   modoSeleccion = false;
   seleccionadosIds = new Set<string>();
+  private readonly claveSeleccionStorage = 'newinsumo_itd_seleccionados';
   totalRegistros = 0;
   totalSeleccionados = 0;
   ordenActual: 'folio-asc' | 'folio-desc' | 'fecha-asc' | 'fecha-desc' = 'folio-desc';
@@ -82,6 +83,7 @@ export class AllItdComponent implements OnInit {
           ultimaGestion: ultimaGestionPorItd.get(itd.id)
         }))
         .sort((a, b) => Number(b.folio) - Number(a.folio));
+      this.restaurarSeleccionGuardada();
       this.actualizarContadores();
 
       this.ordenarRegistros();
@@ -222,6 +224,32 @@ export class AllItdComponent implements OnInit {
       this.itdsFiltrados.every(itd => this.seleccionadosIds.has(itd.id));
   }
 
+  private restaurarSeleccionGuardada(): void {
+    try {
+      const guardados = JSON.parse(localStorage.getItem(this.claveSeleccionStorage) || '[]');
+      const idsValidos = new Set(this.itds.map(itd => itd.id));
+      this.seleccionadosIds = new Set<string>(
+        Array.isArray(guardados)
+          ? guardados.filter((id: unknown): id is string => typeof id === 'string' && idsValidos.has(id))
+          : []
+      );
+      this.modoSeleccion = this.seleccionadosIds.size > 0;
+      this.guardarSeleccion();
+    } catch (error) {
+      console.warn('No fue posible restaurar la selección de ITD:', error);
+      this.seleccionadosIds = new Set<string>();
+      this.modoSeleccion = false;
+    }
+  }
+
+  private guardarSeleccion(): void {
+    try {
+      localStorage.setItem(this.claveSeleccionStorage, JSON.stringify(Array.from(this.seleccionadosIds)));
+    } catch (error) {
+      console.warn('No fue posible guardar la selección de ITD:', error);
+    }
+  }
+
   private actualizarContadores(): void {
     this.totalRegistros = this.itds.length;
     this.totalSeleccionados = this.seleccionadosIds.size;
@@ -233,6 +261,7 @@ export class AllItdComponent implements OnInit {
       else this.seleccionadosIds.delete(itd.id);
     });
     this.seleccionadosIds = new Set(this.seleccionadosIds);
+    this.guardarSeleccion();
     this.actualizarContadores();
     this.changeDetector.detectChanges();
   }
@@ -248,6 +277,7 @@ export class AllItdComponent implements OnInit {
   limpiarSeleccion(): void {
     this.seleccionadosIds.clear();
     this.seleccionadosIds = new Set<string>();
+    this.guardarSeleccion();
     this.actualizarContadores();
     this.changeDetector.detectChanges();
   }

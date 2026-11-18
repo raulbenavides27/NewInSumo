@@ -300,7 +300,7 @@ export class AllItdComponent implements OnInit {
       const filas = (itd.productos || []).map(producto =>
         '<tr><td>' + escapar(producto.sku) + '</td><td>' + escapar(producto.descripcion) + '</td><td>' + escapar(producto.cantidad) + '</td><td>' + escapar(itd.documento) + '</td><td>' + escapar(itd.ocPedido) + '</td><td>' + escapar(itd.numeroSeguimiento) + '</td><td>' + escapar(producto.estadoProducto) + '</td></tr>'
       ).join('');
-      const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && /^https?:\\/\\//i.test(url));
+      const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0));
       const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
       return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
         '<div class="cabecera"><span>' + escapar(fecha(itd.fechaDeclarada)) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div>' +

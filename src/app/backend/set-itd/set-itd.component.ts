@@ -283,7 +283,10 @@ export class SetItdComponent implements OnInit, OnDestroy {
         return;
       }
       this.itd = { ...registro, fechaCreacion: this.convertirFecha(registro.fechaCreacion), productos: (registro.productos || []).map(producto => ({ ...producto })), fotos: [...(registro.fotos || [])] };
-      this.fotosExistentes = [...(registro.fotos || [])];
+      this.fotosExistentes = await Promise.all((registro.fotos || []).map(async referencia => {
+        try { return await this.firestorageService.getImageUrl(referencia, id); }
+        catch (error) { console.warn('No se pudo resolver la fotografía del ITD:', referencia, error); return referencia; }
+      }));
       this.modoEdicion = true;
     } catch (error) {
       console.error('Error al cargar ITD para edición:', error);

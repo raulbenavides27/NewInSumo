@@ -39,6 +39,14 @@
         <ion-icon name="download-outline" slot="start"></ion-icon>
         Exportar CSV
       </ion-button>
+      <ion-button fill="outline" [disabled]="seleccionadosIds.size === 0" (click)="generarPDFSeleccionados()">
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
+        PDF seleccionados
+      </ion-button>
+      <ion-button *ngIf="seleccionadosIds.size > 0" fill="outline" (click)="limpiarSeleccion()">
+        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+        Limpiar selección
+      </ion-button>
       <ion-button class="btn-nuevo" routerLink="/set-itd">
         <ion-icon name="add-outline" slot="start"></ion-icon>
         NUEVO ITD
@@ -46,10 +54,7 @@
     </section>
 
     <section class="resumen-listado">
-      <span class="contador-registros"><strong>{{ itdsFiltrados.length }}</strong> registros · {{ seleccionadosIds.size }} seleccionados</span>
-      <ion-item lines="none" class="filtro-estado"><ion-label>Estado</ion-label><ion-select interface="popover" [(ngModel)]="filtroEstado" (ionChange)="filterProperties()"><ion-select-option value="TODOS">Todos</ion-select-option><ion-select-option value="ABIERTO">Abiertos</ion-select-option><ion-select-option value="CERRADO">Cerrados</ion-select-option></ion-select></ion-item>
-      <ion-button *ngIf="modoSeleccion" size="small" fill="clear" (click)="seleccionarVisibles(true)">Seleccionar visibles</ion-button>
-      <ion-button *ngIf="modoSeleccion" size="small" fill="clear" (click)="seleccionarVisibles(false)">Limpiar selección</ion-button>
+      <span class="contador-registros"><strong>{{ itds.length }}</strong> registros totales · <strong>{{ seleccionadosIds.size }}</strong> seleccionados</span>
       <span class="nota-historial">Las nuevas gestiones se guardan en el historial sin modificar los datos originales.</span>
     </section>
 

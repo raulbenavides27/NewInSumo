@@ -232,8 +232,9 @@
     <div class="fotos-control">
       <div class="fotos-galeria" *ngIf="modoEdicion && fotosExistentes.length > 0">
         <div class="foto-preview" *ngFor="let fotoUrl of fotosExistentes; let i = index">
-          <img [src]="fotoUrl" [alt]="'Fotografía existente ' + (i + 1)">
-          <div class="foto-preview-pie"><span>Fotografía guardada {{ i + 1 }}</span></div>
+          <img *ngIf="!fotosConError.has(fotoUrl)" [src]="fotoUrl" [alt]="'Fotografía existente ' + (i + 1)" (error)="marcarFotoNoDisponible(fotoUrl)">
+          <div class="foto-no-disponible" *ngIf="fotosConError.has(fotoUrl)">No se pudo cargar esta fotografía</div>
+          <div class="foto-preview-pie"><span>Fotografía guardada {{ i + 1 }}</span><ion-button type="button" fill="clear" color="danger" size="small" aria-label="Quitar fotografía existente" (click)="quitarFotoExistente(fotoUrl)"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-button></div>
         </div>
       </div>
       <p class="fotos-ayuda" *ngIf="modoEdicion && fotosExistentes.length > 0">

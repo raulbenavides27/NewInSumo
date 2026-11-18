@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
-import { Itd, ItdProducto } from 'src/app/models/itd.model';
+import { HistorialItd, Itd, ItdProducto } from 'src/app/models/itd.model';
 import { Seller } from 'src/app/models/seller.model';
 import { Usuario } from 'src/app/models/usuario.model';
 
@@ -29,6 +29,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
   itd: Itd = this.crearItdVacio();
 
   fotosSeleccionadas: FotoSeleccionada[] = [];
+  fotosExistentes: string[] = [];
   cargando = false;
   modoEdicion = false;
   motivoEdicion = '';
@@ -272,12 +273,16 @@ export class SetItdComponent implements OnInit, OnDestroy {
         await this.router.navigate(['/all-itd']);
         return;
       }
-      if (registro.ultimaGestion?.estadoGestion === 'CERRADO' && this.rolUsuarioActual !== 'ADMIN' && this.rolUsuarioActual !== 'SUPERVISOR') {
+      const gestiones = await firstValueFrom(this.firestoreService.getCollection<HistorialItd>('gestiones_itd'));
+      const ultimaGestion = gestiones.filter(gestion => gestion.itdId === id)
+        .sort((a, b) => this.convertirFecha(b.fechaGestion).getTime() - this.convertirFecha(a.fechaGestion).getTime())[0];
+      if (ultimaGestion?.estadoGestion === 'CERRADO' && this.rolUsuarioActual !== 'ADMIN' && this.rolUsuarioActual !== 'SUPERVISOR') {
         alert('Este ITD está cerrado. Solo un administrador o supervisor puede editarlo.');
         await this.router.navigate(['/all-itd']);
         return;
       }
       this.itd = { ...registro, fechaCreacion: this.convertirFecha(registro.fechaCreacion), productos: (registro.productos || []).map(producto => ({ ...producto })), fotos: [...(registro.fotos || [])] };
+      this.fotosExistentes = [...(registro.fotos || [])];
       this.modoEdicion = true;
     } catch (error) {
       console.error('Error al cargar ITD para edición:', error);
@@ -319,10 +324,10 @@ export class SetItdComponent implements OnInit, OnDestroy {
       const despues = (actualizado as any)[campo];
       if (JSON.stringify(antes) !== JSON.stringify(despues)) cambios[campo] = { antes, despues };
     });
-    await this.firestoreService.updateDoc<Itd>({} as any, 'itds', original.id);
     await this.firestoreService.updateDoc<Itd>(actualizado, 'itds', original.id);
+    const idHistorial = this.firestoreService.getId();
     await this.firestoreService.createDoc({
-      id: this.firestoreService.getId(), itdId: original.id, folio: original.folio,
+      id: idHistorial, itdId: original.id, folio: original.folio,
       fechaModificacion: new Date(), motivo, uidUsuario: this.uidActual,
       usuario: this.nombreUsuarioActual, cargo: this.cargoUsuarioActual, rol: this.rolUsuarioActual, cambios
     }, 'historial_ediciones_itd', this.firestoreService.getId());

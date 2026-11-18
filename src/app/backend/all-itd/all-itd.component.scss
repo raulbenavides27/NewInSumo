@@ -91,6 +91,13 @@
   flex-wrap: wrap;
   gap: 10px 18px;
   margin-bottom: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 10px 12px;
+  border: 1px solid #d5deeb;
+  border-radius: 9px;
+  background: #f3f6fb;
   color: #526176;
   font-size: 13px;
 }
@@ -134,8 +141,6 @@
 
 .tabla-itd th.th-ordenable { cursor: pointer; user-select: none; }
 .tabla-itd th.th-ordenable:hover { background: #dce7f5; }
-.filtro-estado { --background: #ffffff; --min-height: 38px; border: 1px solid #d5deeb; border-radius: 8px; }
-.resumen-listado ion-button { font-size: 12px; }
 
 .tabla-itd td {
   padding: 16px 14px;

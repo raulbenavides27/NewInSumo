@@ -58,7 +58,7 @@
       <table class="tabla-itd">
         <thead>
           <tr>
-            <th *ngIf="modoSeleccion"><ion-checkbox (ionChange)="seleccionarVisibles($event.detail.checked)"></ion-checkbox></th>
+            <th *ngIf="modoSeleccion"><ion-checkbox (ionChange)="seleccionarVisibles($any($event).detail.checked)"></ion-checkbox></th>
             <th (click)="ordenarPor('folio')" class="th-ordenable">Folio / Fecha ↕</th>
             <th>Seller</th>
             <th>Documento / OC</th>
@@ -72,7 +72,7 @@
         <tbody>
           <ng-container *ngFor="let itd of itdsFiltrados">
             <tr>
-              <td *ngIf="modoSeleccion"><ion-checkbox [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $event.detail.checked)"></ion-checkbox></td>
+              <td *ngIf="modoSeleccion"><ion-checkbox [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox></td>
               <td class="celda-folio">
                 <strong>ITD {{ itd.folio | number:'2.0-0' }}</strong>
                 <span>{{ itd.fechaDeclarada }}</span>
@@ -122,7 +122,7 @@
     <!-- Vista móvil: tarjetas, sin desplazamiento horizontal -->
     <section class="lista-movil" *ngIf="!cargando && itdsFiltrados.length > 0">
       <article class="tarjeta-itd" *ngFor="let itd of itdsFiltrados">
-        <ion-item lines="none" *ngIf="modoSeleccion"><ion-checkbox slot="start" [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $event.detail.checked)"></ion-checkbox><ion-label>Seleccionar ITD {{ itd.folio }}</ion-label></ion-item>
+        <ion-item lines="none" *ngIf="modoSeleccion"><ion-checkbox slot="start" [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox><ion-label>Seleccionar ITD {{ itd.folio }}</ion-label></ion-item>
         <div class="tarjeta-cabecera">
           <div>
             <span class="etiqueta-folio">REGISTRO ITD</span>

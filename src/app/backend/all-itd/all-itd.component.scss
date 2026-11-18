@@ -42,8 +42,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
+  gap: 12px;
   margin-bottom: 22px;
+  flex-wrap: wrap;
 }
 
 .sobre-titulo,
@@ -130,6 +131,11 @@
   font-weight: 750;
   border-bottom: 1px solid #d5deeb;
 }
+
+.tabla-itd th.th-ordenable { cursor: pointer; user-select: none; }
+.tabla-itd th.th-ordenable:hover { background: #dce7f5; }
+.filtro-estado { --background: #ffffff; --min-height: 38px; border: 1px solid #d5deeb; border-radius: 8px; }
+.resumen-listado ion-button { font-size: 12px; }
 
 .tabla-itd td {
   padding: 16px 14px;

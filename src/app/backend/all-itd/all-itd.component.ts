@@ -165,6 +165,10 @@ export class AllItdComponent implements OnInit {
     return itd.ultimaGestion?.estadoGestion || 'ABIERTO';
   }
 
+  editarITD(itd: ItdListado): void {
+    this.router.navigate(['/set-itd'], { queryParams: { editar: itd.id } });
+  }
+
   goPerfil(): void {
     this.router.navigate(['perfil']);
   }

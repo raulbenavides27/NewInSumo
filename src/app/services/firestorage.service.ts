@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, isObservable } from 'rxjs';
 import { last, switchMap } from 'rxjs/operators';
 
 @Injectable({
@@ -32,7 +32,8 @@ export class FirestorageService {
     const ref = reference.startsWith('https://') || reference.startsWith('http://') || reference.startsWith('gs://')
       ? this.FireStorage.storage.refFromURL(reference)
       : this.FireStorage.ref('itds/' + itdId + '/fotos/' + reference);
-    return await firstValueFrom(ref.getDownloadURL());
+    const resultado = ref.getDownloadURL();
+    return isObservable(resultado) ? await firstValueFrom(resultado) : await resultado;
   }
 
   async deleteImage(downloadUrl: string): Promise<void> {

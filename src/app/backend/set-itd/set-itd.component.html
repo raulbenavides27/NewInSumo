@@ -230,6 +230,15 @@
     <ion-label>Adjuntar fotografías</ion-label>
 
     <div class="fotos-control">
+      <div class="fotos-galeria" *ngIf="modoEdicion && fotosExistentes.length > 0">
+        <div class="foto-preview" *ngFor="let fotoUrl of fotosExistentes; let i = index">
+          <img [src]="fotoUrl" [alt]="'Fotografía existente ' + (i + 1)">
+          <div class="foto-preview-pie"><span>Fotografía guardada {{ i + 1 }}</span></div>
+        </div>
+      </div>
+      <p class="fotos-ayuda" *ngIf="modoEdicion && fotosExistentes.length > 0">
+        Las fotografías existentes se conservan. Puedes agregar nuevas fotografías.
+      </p>
       <!-- ESCRITORIO Y GALERÍA DEL MÓVIL -->
       <input
         #selectorGaleria

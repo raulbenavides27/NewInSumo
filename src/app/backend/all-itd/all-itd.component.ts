@@ -28,6 +28,10 @@ export class AllItdComponent implements OnInit {
   cargando = false;
   guardandoGestion = false;
   editandoItdId: string | null = null;
+  modoSeleccion = false;
+  seleccionadosIds = new Set<string>();
+  filtroEstado = 'TODOS';
+  ordenActual: 'folio-asc' | 'folio-desc' | 'fecha-asc' | 'fecha-desc' = 'folio-desc';
 
   gestionForm: {
     observacion: string;
@@ -77,6 +81,7 @@ export class AllItdComponent implements OnInit {
         }))
         .sort((a, b) => Number(b.folio) - Number(a.folio));
 
+      this.ordenarRegistros();
       this.filterProperties();
     } catch (error) {
       console.error('Error al cargar los ITD:', error);
@@ -89,12 +94,9 @@ export class AllItdComponent implements OnInit {
   filterProperties(): void {
     const termino = this.searchTerm.trim().toLowerCase();
 
-    if (!termino) {
-      this.itdsFiltrados = [...this.itds];
-      return;
-    }
-
-    this.itdsFiltrados = this.itds.filter(itd =>
+    this.itdsFiltrados = this.itds.filter(itd => {
+      const coincideEstado = this.filtroEstado === 'TODOS' || this.estadoGestion(itd) === this.filtroEstado;
+      const coincideTexto = !termino || (
       String(itd.folio).toLowerCase().includes(termino) ||
       (itd.sellerNombre || '').toLowerCase().includes(termino) ||
       (itd.documento || '').toLowerCase().includes(termino) ||
@@ -103,8 +105,9 @@ export class AllItdComponent implements OnInit {
       (itd.productos || []).some(producto =>
         (producto.sku || '').toLowerCase().includes(termino) ||
         (producto.descripcion || '').toLowerCase().includes(termino)
-      )
-    );
+      ));
+      return coincideEstado && coincideTexto;
+    });
   }
 
   abrirGestion(itd: ItdListado): void {
@@ -193,6 +196,80 @@ export class AllItdComponent implements OnInit {
       return fecha.toDate();
     }
     return fecha instanceof Date ? fecha : new Date(fecha || 0);
+  }
+
+
+  toggleModoSeleccion(): void {
+    this.modoSeleccion = !this.modoSeleccion;
+    if (!this.modoSeleccion) this.seleccionadosIds.clear();
+  }
+
+  estaSeleccionado(itd: Itd): boolean {
+    return this.seleccionadosIds.has(itd.id);
+  }
+
+  cambiarSeleccion(itd: Itd, marcado: boolean): void {
+    if (marcado) this.seleccionadosIds.add(itd.id);
+    else this.seleccionadosIds.delete(itd.id);
+    this.seleccionadosIds = new Set(this.seleccionadosIds);
+  }
+
+  seleccionarVisibles(marcado: boolean): void {
+    this.itdsFiltrados.forEach(itd => {
+      if (marcado) this.seleccionadosIds.add(itd.id);
+      else this.seleccionadosIds.delete(itd.id);
+    });
+    this.seleccionadosIds = new Set(this.seleccionadosIds);
+  }
+
+  ordenarPor(campo: 'folio' | 'fecha'): void {
+    if (campo === 'folio') {
+      this.ordenActual = this.ordenActual === 'folio-asc' ? 'folio-desc' : 'folio-asc';
+    } else {
+      this.ordenActual = this.ordenActual === 'fecha-asc' ? 'fecha-desc' : 'fecha-asc';
+    }
+    this.ordenarRegistros();
+    this.filterProperties();
+  }
+
+  private ordenarRegistros(): void {
+    const ascendente = this.ordenActual.endsWith('asc');
+    this.itds.sort((a, b) => {
+      const diferencia = this.ordenActual.startsWith('folio')
+        ? Number(a.folio) - Number(b.folio)
+        : new Date(a.fechaDeclarada || 0).getTime() - new Date(b.fechaDeclarada || 0).getTime();
+      return ascendente ? diferencia : -diferencia;
+    });
+  }
+
+  exportarExcel(): void {
+    const registros = this.seleccionadosIds.size
+      ? this.itds.filter(itd => this.seleccionadosIds.has(itd.id))
+      : this.itdsFiltrados;
+
+    if (!registros.length) {
+      alert('No hay registros para exportar.');
+      return;
+    }
+
+    const encabezados = ['Folio', 'Fecha declarada', 'Fecha creación', 'Seller', 'Código seller', 'Documento', 'OC/Pedido', 'Número seguimiento', 'SKU', 'Descripción producto', 'Cantidad', 'Estado producto', 'Observaciones gestión', 'Compensación (%)', 'Estado gestión', 'Responsable creación', 'Cargo creación', 'Detalle estado'];
+    const filas = registros.flatMap(itd => (itd.productos?.length ? itd.productos : [{ sku: '', descripcion: '', cantidad: '', estadoProducto: '' }]).map(producto => [
+      itd.folio, itd.fechaDeclarada, this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'),
+      itd.sellerNombre, itd.sellerCodigo ?? '', itd.documento, itd.ocPedido, itd.numeroSeguimiento,
+      producto.sku, producto.descripcion, producto.cantidad, producto.estadoProducto,
+      itd.ultimaGestion?.observacion || '', itd.ultimaGestion?.compensacion ?? '',
+      itd.ultimaGestion?.estadoGestion || 'ABIERTO', itd.responsableCreacion, itd.cargoCreacion, itd.detalleEstado
+    ]));
+    const csv = [encabezados, ...filas].map(fila =>
+      fila.map(valor => '"' + String(valor ?? '').replace(/"/g, '""') + '"').join(';')
+    ).join('\r\n');
+    const blob = new Blob(['\\uFEFF', csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = 'listado_ITD_' + new Date().toISOString().slice(0, 10) + '.csv';
+    enlace.click();
+    URL.revokeObjectURL(url);
   }
 
   generarPDF(itd: Itd): void {

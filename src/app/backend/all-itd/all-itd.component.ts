@@ -213,6 +213,20 @@ export class AllItdComponent implements OnInit {
     return this.seleccionadosIds.has(itd.id);
   }
 
+  todosVisiblesSeleccionados(): boolean {
+    return this.itdsFiltrados.length > 0 &&
+      this.itdsFiltrados.every(itd => this.seleccionadosIds.has(itd.id));
+  }
+
+  cambiarSeleccionVisibles(marcado: boolean): void {
+    this.itdsFiltrados.forEach(itd => {
+      if (marcado) this.seleccionadosIds.add(itd.id);
+      else this.seleccionadosIds.delete(itd.id);
+    });
+    this.seleccionadosIds = new Set(this.seleccionadosIds);
+    this.totalSeleccionados = this.seleccionadosIds.size;
+  }
+
   cambiarSeleccion(itd: Itd, marcado: boolean): void {
     if (marcado) this.seleccionadosIds.add(itd.id);
     else this.seleccionadosIds.delete(itd.id);

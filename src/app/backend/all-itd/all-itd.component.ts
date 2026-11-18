@@ -30,7 +30,6 @@ export class AllItdComponent implements OnInit {
   editandoItdId: string | null = null;
   modoSeleccion = false;
   seleccionadosIds = new Set<string>();
-  filtroEstado = 'TODOS';
   ordenActual: 'folio-asc' | 'folio-desc' | 'fecha-asc' | 'fecha-desc' = 'folio-desc';
 
   gestionForm: {
@@ -95,7 +94,6 @@ export class AllItdComponent implements OnInit {
     const termino = this.searchTerm.trim().toLowerCase();
 
     this.itdsFiltrados = this.itds.filter(itd => {
-      const coincideEstado = this.filtroEstado === 'TODOS' || this.estadoGestion(itd) === this.filtroEstado;
       const coincideTexto = !termino || (
       String(itd.folio).toLowerCase().includes(termino) ||
       (itd.sellerNombre || '').toLowerCase().includes(termino) ||
@@ -106,7 +104,7 @@ export class AllItdComponent implements OnInit {
         (producto.sku || '').toLowerCase().includes(termino) ||
         (producto.descripcion || '').toLowerCase().includes(termino)
       ));
-      return coincideEstado && coincideTexto;
+      return coincideTexto;
     });
   }
 
@@ -201,7 +199,7 @@ export class AllItdComponent implements OnInit {
 
   toggleModoSeleccion(): void {
     this.modoSeleccion = !this.modoSeleccion;
-    if (!this.modoSeleccion) this.seleccionadosIds.clear();
+    if (!this.modoSeleccion) this.limpiarSeleccion();
   }
 
   estaSeleccionado(itd: Itd): boolean {
@@ -214,12 +212,9 @@ export class AllItdComponent implements OnInit {
     this.seleccionadosIds = new Set(this.seleccionadosIds);
   }
 
-  seleccionarVisibles(marcado: boolean): void {
-    this.itdsFiltrados.forEach(itd => {
-      if (marcado) this.seleccionadosIds.add(itd.id);
-      else this.seleccionadosIds.delete(itd.id);
-    });
-    this.seleccionadosIds = new Set(this.seleccionadosIds);
+  limpiarSeleccion(): void {
+    this.seleccionadosIds.clear();
+    this.seleccionadosIds = new Set<string>();
   }
 
   ordenarPor(campo: 'folio' | 'fecha'): void {
@@ -276,6 +271,54 @@ export class AllItdComponent implements OnInit {
     enlace.download = 'listado_ITD_' + new Date().toISOString().slice(0, 10) + '.csv';
     enlace.click();
     URL.revokeObjectURL(url);
+  }
+
+  generarPDFSeleccionados(): void {
+    const registros = this.itds.filter(itd => this.seleccionadosIds.has(itd.id));
+    if (!registros.length) {
+      alert('Selecciona al menos un ITD para generar el PDF consolidado.');
+      return;
+    }
+    this.generarPDFMultiple(registros);
+  }
+
+  private generarPDFMultiple(registros: ItdListado[]): void {
+    const ventana = window.open('', '_blank');
+    if (!ventana) {
+      alert('El navegador bloqueó la ventana del informe. Permite las ventanas emergentes e inténtalo nuevamente.');
+      return;
+    }
+    const escapar = (valor: unknown): string => String(valor ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    const fecha = (valor: string): string => {
+      if (!valor) return '';
+      const partes = valor.split('-');
+      return partes.length === 3 ? partes[2] + '-' + partes[1] + '-' + partes[0] : escapar(valor);
+    };
+    const paginas = registros.map((itd, indice) => {
+      const filas = (itd.productos || []).map(producto =>
+        '<tr><td>' + escapar(producto.sku) + '</td><td>' + escapar(producto.descripcion) + '</td><td>' + escapar(producto.cantidad) + '</td><td>' + escapar(itd.documento) + '</td><td>' + escapar(itd.ocPedido) + '</td><td>' + escapar(itd.numeroSeguimiento) + '</td><td>' + escapar(producto.estadoProducto) + '</td></tr>'
+      ).join('');
+      const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && /^https?:\\/\\//i.test(url));
+      const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
+      return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
+        '<div class="cabecera"><span>' + escapar(fecha(itd.fechaDeclarada)) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div>' +
+        '<p><strong>Atención a ' + escapar(itd.sellerNombre) + '</strong></p><h1>Informe de recepción de producto</h1>' +
+        '<p>Fecha declarada: ' + escapar(fecha(itd.fechaDeclarada)) + '</p>' +
+        '<table><thead><tr><th>SKU</th><th>Descripción</th><th>Cantidad</th><th>Documento</th><th>OC / Pedido</th><th>N.º Seguimiento</th><th>Estado</th></tr></thead><tbody>' + filas + '</tbody></table>' +
+        '<p>Esto corresponde a una devolución realizada por: <strong>' + escapar(itd.sellerNombre) + '</strong></p>' +
+        '<h2>Detalle del estado</h2><p class="detalle">' + escapar(itd.detalleEstado || 'Sin detalle informado.') + '</p>' + galeria +
+        '<div class="firma"><strong>' + escapar(itd.responsableCreacion) + '</strong><span>' + escapar(itd.cargoCreacion) + '</span></div></section>';
+    }).join('');
+    ventana.document.open();
+    ventana.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informes ITD seleccionados</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font:10pt Arial;color:#171717;line-height:1.35}.cabecera{display:flex;justify-content:space-between}.informe{min-height:260mm}.salto-pagina{break-before:page;page-break-before:always}h1{font-size:17pt;margin:16px 0 12px}h2{font-size:12pt;margin-top:18px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td{border:1px solid #555;padding:6px 5px;text-align:left;overflow-wrap:anywhere;vertical-align:top}th{background:#eee}.detalle{white-space:pre-wrap;overflow-wrap:anywhere}.galeria{display:grid;grid-template-columns:repeat(2,1fr);gap:8mm;margin-top:10mm}.galeria figure{height:66mm;margin:0;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;padding:2mm;break-inside:avoid}.galeria img{max-width:100%;max-height:100%;object-fit:contain}.firma{margin-top:22mm;text-align:right}.firma strong,.firma span{display:block}tr{break-inside:avoid}</style></head><body>' + paginas + '</body></html>');
+    ventana.document.close();
+    const imprimir = (): void => {
+      const imagenes = Array.from(ventana.document.images);
+      Promise.all(imagenes.map(imagen => imagen.complete ? Promise.resolve() : new Promise<void>(resolve => { imagen.onload = () => resolve(); imagen.onerror = () => resolve(); }))).then(() => { ventana.focus(); ventana.print(); });
+    };
+    if (ventana.document.readyState === 'complete') imprimir(); else ventana.onload = imprimir;
   }
 
   generarPDF(itd: Itd): void {

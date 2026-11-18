@@ -419,7 +419,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
       return false;
     }
 
-    if (!this.itd.responsableCreacion) {
+    if (!this.modoEdicion && !this.itd.responsableCreacion) {
       alert('No fue posible identificar al usuario responsable del ITD.');
       return false;
     }

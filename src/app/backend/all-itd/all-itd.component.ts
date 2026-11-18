@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -30,12 +30,13 @@ export class AllItdComponent implements OnInit {
   editandoItdId: string | null = null;
   modoSeleccion = false;
   seleccionadosIds = new Set<string>();
-  get totalRegistros(): number {
-    return this.itds.length;
+  contarRegistrosVisibles(): number {
+    return this.itdsFiltrados.length;
   }
 
-  get totalSeleccionados(): number {
-    return this.seleccionadosIds.size;
+  contarSeleccionadosVisibles(): number {
+    return this.itdsFiltrados.reduce((total, itd) =>
+      total + (this.seleccionadosIds.has(itd.id) ? 1 : 0), 0);
   }
   ordenActual: 'folio-asc' | 'folio-desc' | 'fecha-asc' | 'fecha-desc' = 'folio-desc';
 
@@ -50,7 +51,8 @@ export class AllItdComponent implements OnInit {
     private router: Router,
     private firestoreService: FirestoreService,
     private gestionItdService: GestionItdService,
-    private firebaseAuth: FirebaseauthService
+    private firebaseAuth: FirebaseauthService,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -89,6 +91,7 @@ export class AllItdComponent implements OnInit {
 
       this.ordenarRegistros();
       this.filterProperties();
+      this.changeDetector.detectChanges();
     } catch (error) {
       console.error('Error al cargar los ITD:', error);
       alert('No fue posible cargar el registro de ITD.');
@@ -113,6 +116,7 @@ export class AllItdComponent implements OnInit {
       ));
       return coincideTexto;
     });
+    this.changeDetector.detectChanges();
   }
 
   abrirGestion(itd: ItdListado): void {
@@ -228,7 +232,7 @@ export class AllItdComponent implements OnInit {
       else this.seleccionadosIds.delete(itd.id);
     });
     this.seleccionadosIds = new Set(this.seleccionadosIds);
-
+    this.changeDetector.detectChanges();
   }
 
   cambiarSeleccion(itd: Itd, marcado: boolean): void {
@@ -241,7 +245,7 @@ export class AllItdComponent implements OnInit {
   limpiarSeleccion(): void {
     this.seleccionadosIds.clear();
     this.seleccionadosIds = new Set<string>();
-
+    this.changeDetector.detectChanges();
   }
 
   ordenarPor(campo: 'folio' | 'fecha'): void {

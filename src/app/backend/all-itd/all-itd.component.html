@@ -105,6 +105,9 @@
                 </ion-badge>
               </td>
               <td class="celda-acciones">
+                <ion-button size="small" fill="outline" (click)="editarITD(itd)">
+                  <ion-icon slot="start" name="pencil-outline"></ion-icon>Editar
+                </ion-button>
                 <ion-button size="small" fill="outline" (click)="abrirGestion(itd)">
                   <ion-icon slot="start" name="create-outline"></ion-icon>
                   {{ editandoItdId === itd.id ? 'Cerrar' : 'Gestionar' }}
@@ -171,6 +174,9 @@
         </div>
 
         <div class="acciones-movil">
+          <ion-button expand="block" fill="outline" (click)="editarITD(itd)">
+            <ion-icon slot="start" name="pencil-outline"></ion-icon>Editar ITD
+          </ion-button>
           <ion-button expand="block" fill="outline" (click)="abrirGestion(itd)">
             <ion-icon slot="start" name="create-outline"></ion-icon>
             {{ editandoItdId === itd.id ? 'Cerrar edición' : 'Gestionar ITD' }}

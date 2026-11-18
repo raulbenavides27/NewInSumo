@@ -59,8 +59,7 @@
         <thead>
           <tr>
             <th *ngIf="modoSeleccion"><ion-checkbox (ionChange)="seleccionarVisibles($event.detail.checked)"></ion-checkbox></th>
-            <th (click)="ordenarPor('folio')" class="th-ordenable">Folio ↕</th>
-            <th (click)="ordenarPor('fecha')" class="th-ordenable">Fecha ↕</th>
+            <th (click)="ordenarPor('folio')" class="th-ordenable">Folio / Fecha ↕</th>
             <th>Seller</th>
             <th>Documento / OC</th>
             <th>Productos</th>

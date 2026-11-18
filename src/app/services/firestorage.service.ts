@@ -27,6 +27,14 @@ export class FirestorageService {
     }
   }
 
+  async getImageUrl(reference: string, itdId: string): Promise<string> {
+    if (!reference) throw new Error('Referencia de fotografía vacía.');
+    const ref = reference.startsWith('https://') || reference.startsWith('http://') || reference.startsWith('gs://')
+      ? this.FireStorage.storage.refFromURL(reference)
+      : this.FireStorage.ref('itds/' + itdId + '/fotos/' + reference);
+    return await firstValueFrom(ref.getDownloadURL());
+  }
+
   async deleteImage(downloadUrl: string): Promise<void> {
     if (!downloadUrl || (!downloadUrl.startsWith('https://') && !downloadUrl.startsWith('http://') && !downloadUrl.startsWith('gs://'))) {
       return;

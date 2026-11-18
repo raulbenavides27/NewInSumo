@@ -43,10 +43,6 @@
         <ion-icon name="document-text-outline" slot="start"></ion-icon>
         PDF seleccionados
       </ion-button>
-      <ion-button *ngIf="totalSeleccionados > 0" fill="outline" (click)="limpiarSeleccion()">
-        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
-        Limpiar selección
-      </ion-button>
       <ion-button class="btn-nuevo" routerLink="/set-itd">
         <ion-icon name="add-outline" slot="start"></ion-icon>
         NUEVO ITD
@@ -63,7 +59,14 @@
       <table class="tabla-itd">
         <thead>
           <tr>
-            <th *ngIf="modoSeleccion"></th>
+            <th *ngIf="modoSeleccion" class="th-seleccion">
+              <ion-checkbox
+                [checked]="todosVisiblesSeleccionados()"
+                [indeterminate]="totalSeleccionados > 0 && !todosVisiblesSeleccionados()"
+                (ionChange)="cambiarSeleccionVisibles($any($event).detail.checked)"
+                aria-label="Seleccionar o desmarcar todos los ITD visibles">
+              </ion-checkbox>
+            </th>
             <th (click)="ordenarPor('folio')" class="th-ordenable">Folio / Fecha ↕</th>
             <th>Seller</th>
             <th>Documento / OC</th>

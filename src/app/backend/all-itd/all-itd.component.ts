@@ -30,8 +30,13 @@ export class AllItdComponent implements OnInit {
   editandoItdId: string | null = null;
   modoSeleccion = false;
   seleccionadosIds = new Set<string>();
-  totalRegistros = 0;
-  totalSeleccionados = 0;
+  get totalRegistros(): number {
+    return this.itds.length;
+  }
+
+  get totalSeleccionados(): number {
+    return this.seleccionadosIds.size;
+  }
   ordenActual: 'folio-asc' | 'folio-desc' | 'fecha-asc' | 'fecha-desc' = 'folio-desc';
 
   gestionForm: {
@@ -82,7 +87,6 @@ export class AllItdComponent implements OnInit {
         }))
         .sort((a, b) => Number(b.folio) - Number(a.folio));
 
-      this.totalRegistros = this.itds.length;
       this.ordenarRegistros();
       this.filterProperties();
     } catch (error) {
@@ -224,20 +228,20 @@ export class AllItdComponent implements OnInit {
       else this.seleccionadosIds.delete(itd.id);
     });
     this.seleccionadosIds = new Set(this.seleccionadosIds);
-    this.totalSeleccionados = this.seleccionadosIds.size;
+
   }
 
   cambiarSeleccion(itd: Itd, marcado: boolean): void {
     if (marcado) this.seleccionadosIds.add(itd.id);
     else this.seleccionadosIds.delete(itd.id);
     this.seleccionadosIds = new Set(this.seleccionadosIds);
-    this.totalSeleccionados = this.seleccionadosIds.size;
+
   }
 
   limpiarSeleccion(): void {
     this.seleccionadosIds.clear();
     this.seleccionadosIds = new Set<string>();
-    this.totalSeleccionados = 0;
+
   }
 
   ordenarPor(campo: 'folio' | 'fecha'): void {

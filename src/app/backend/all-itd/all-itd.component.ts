@@ -30,14 +30,8 @@ export class AllItdComponent implements OnInit {
   editandoItdId: string | null = null;
   modoSeleccion = false;
   seleccionadosIds = new Set<string>();
-  contarRegistrosVisibles(): number {
-    return this.itdsFiltrados.length;
-  }
-
-  contarSeleccionadosVisibles(): number {
-    return this.itdsFiltrados.reduce((total, itd) =>
-      total + (this.seleccionadosIds.has(itd.id) ? 1 : 0), 0);
-  }
+  totalRegistros = 0;
+  totalSeleccionados = 0;
   ordenActual: 'folio-asc' | 'folio-desc' | 'fecha-asc' | 'fecha-desc' = 'folio-desc';
 
   gestionForm: {
@@ -88,6 +82,7 @@ export class AllItdComponent implements OnInit {
           ultimaGestion: ultimaGestionPorItd.get(itd.id)
         }))
         .sort((a, b) => Number(b.folio) - Number(a.folio));
+      this.actualizarContadores();
 
       this.ordenarRegistros();
       this.filterProperties();
@@ -116,6 +111,7 @@ export class AllItdComponent implements OnInit {
       ));
       return coincideTexto;
     });
+    this.actualizarContadores();
     this.changeDetector.detectChanges();
   }
 
@@ -226,12 +222,18 @@ export class AllItdComponent implements OnInit {
       this.itdsFiltrados.every(itd => this.seleccionadosIds.has(itd.id));
   }
 
+  private actualizarContadores(): void {
+    this.totalRegistros = this.itds.length;
+    this.totalSeleccionados = this.seleccionadosIds.size;
+  }
+
   cambiarSeleccionVisibles(marcado: boolean): void {
     this.itdsFiltrados.forEach(itd => {
       if (marcado) this.seleccionadosIds.add(itd.id);
       else this.seleccionadosIds.delete(itd.id);
     });
     this.seleccionadosIds = new Set(this.seleccionadosIds);
+    this.actualizarContadores();
     this.changeDetector.detectChanges();
   }
 
@@ -239,12 +241,14 @@ export class AllItdComponent implements OnInit {
     if (marcado) this.seleccionadosIds.add(itd.id);
     else this.seleccionadosIds.delete(itd.id);
     this.seleccionadosIds = new Set(this.seleccionadosIds);
+    this.actualizarContadores();
     this.changeDetector.detectChanges();
   }
 
   limpiarSeleccion(): void {
     this.seleccionadosIds.clear();
     this.seleccionadosIds = new Set<string>();
+    this.actualizarContadores();
     this.changeDetector.detectChanges();
   }
 

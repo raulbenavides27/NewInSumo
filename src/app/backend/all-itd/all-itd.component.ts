@@ -83,6 +83,7 @@ export class AllItdComponent implements OnInit {
           ultimaGestion: ultimaGestionPorItd.get(itd.id)
         }))
         .sort((a, b) => Number(b.folio) - Number(a.folio));
+      console.log('[ITD DEBUG] Firestore cargó:', { registrosRecibidos: registros.length, itds: this.itds.length });
       this.restaurarSeleccionGuardada();
       this.actualizarContadores();
 
@@ -114,6 +115,7 @@ export class AllItdComponent implements OnInit {
       return coincideTexto;
     });
     this.actualizarContadores();
+    console.log('[ITD DEBUG] Filtro aplicado:', { total: this.itds.length, filtrados: this.itdsFiltrados.length, totalRegistros: this.totalRegistros, seleccionados: this.totalSeleccionados });
     this.changeDetector.detectChanges();
   }
 
@@ -253,6 +255,7 @@ export class AllItdComponent implements OnInit {
   private actualizarContadores(): void {
     this.totalRegistros = this.itds.length;
     this.totalSeleccionados = this.seleccionadosIds.size;
+    console.log('[ITD DEBUG] Contadores actualizados:', { totalRegistros: this.totalRegistros, totalSeleccionados: this.totalSeleccionados, itdsFiltrados: this.itdsFiltrados.length });
   }
 
   cambiarSeleccionVisibles(marcado: boolean): void {

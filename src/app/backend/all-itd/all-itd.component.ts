@@ -258,6 +258,10 @@ export class AllItdComponent implements OnInit {
     }
   }
 
+  contarSeleccionadosEnLista(): number {
+    return this.itdsFiltrados.filter(itd => this.seleccionadosIds.has(itd.id)).length;
+  }
+
   private actualizarContadores(): void {
     this.totalRegistros = this.itds.length;
     this.totalSeleccionados = this.seleccionadosIds.size;

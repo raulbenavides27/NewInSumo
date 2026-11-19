@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -47,7 +47,8 @@ export class AllItdComponent implements OnInit {
     private firestoreService: FirestoreService,
     private gestionItdService: GestionItdService,
     private firebaseAuth: FirebaseauthService,
-    private changeDetector: ChangeDetectorRef
+    private changeDetector: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -77,19 +78,19 @@ export class AllItdComponent implements OnInit {
           }
         });
 
-      this.itds = registros
-        .map(itd => ({
-          ...itd,
-          ultimaGestion: ultimaGestionPorItd.get(itd.id)
-        }))
-        .sort((a, b) => Number(b.folio) - Number(a.folio));
-      console.log('[ITD DEBUG] Firestore cargó:', { registrosRecibidos: registros.length, itds: this.itds.length });
-      this.restaurarSeleccionGuardada();
-      this.actualizarContadores();
-
-      this.ordenarRegistros();
-      this.filterProperties();
-      this.changeDetector.detectChanges();
+      this.ngZone.run(() => {
+        this.itds = registros
+          .map(itd => ({
+            ...itd,
+            ultimaGestion: ultimaGestionPorItd.get(itd.id)
+          }))
+          .sort((a, b) => Number(b.folio) - Number(a.folio));
+        this.restaurarSeleccionGuardada();
+        this.actualizarContadores();
+        this.ordenarRegistros();
+        this.filterProperties();
+        this.changeDetector.detectChanges();
+      });
     } catch (error) {
       console.error('Error al cargar los ITD:', error);
       alert('No fue posible cargar el registro de ITD.');
@@ -115,7 +116,6 @@ export class AllItdComponent implements OnInit {
       return coincideTexto;
     });
     this.actualizarContadores();
-    console.log('[ITD DEBUG] Filtro aplicado:', { total: this.itds.length, filtrados: this.itdsFiltrados.length, totalRegistros: this.totalRegistros, seleccionados: this.totalSeleccionados });
     this.changeDetector.detectChanges();
   }
 
@@ -255,7 +255,6 @@ export class AllItdComponent implements OnInit {
   private actualizarContadores(): void {
     this.totalRegistros = this.itds.length;
     this.totalSeleccionados = this.seleccionadosIds.size;
-    console.log('[ITD DEBUG] Contadores actualizados:', { totalRegistros: this.totalRegistros, totalSeleccionados: this.totalSeleccionados, itdsFiltrados: this.itdsFiltrados.length });
   }
 
   cambiarSeleccionVisibles(marcado: boolean): void {
@@ -273,6 +272,7 @@ export class AllItdComponent implements OnInit {
     if (marcado) this.seleccionadosIds.add(itd.id);
     else this.seleccionadosIds.delete(itd.id);
     this.seleccionadosIds = new Set(this.seleccionadosIds);
+    this.guardarSeleccion();
     this.actualizarContadores();
     this.changeDetector.detectChanges();
   }

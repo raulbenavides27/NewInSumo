@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -48,7 +48,8 @@ export class AllItdComponent implements OnInit {
     private gestionItdService: GestionItdService,
     private firebaseAuth: FirebaseauthService,
     private changeDetector: ChangeDetectorRef,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private appRef: ApplicationRef
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -95,7 +96,12 @@ export class AllItdComponent implements OnInit {
       console.error('Error al cargar los ITD:', error);
       alert('No fue posible cargar el registro de ITD.');
     } finally {
-      this.cargando = false;
+      this.ngZone.run(() => {
+        this.cargando = false;
+        this.actualizarContadores();
+        this.changeDetector.markForCheck();
+        this.appRef.tick();
+      });
     }
   }
 

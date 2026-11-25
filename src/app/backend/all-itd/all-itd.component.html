@@ -49,10 +49,6 @@
       </ion-button>
     </section>
 
-    <section class="resumen-listado">
-      <span class="contador-registros"><strong>{{ itdsFiltrados.length }}</strong> registros totales · <strong>{{ contarSeleccionadosEnLista() }}</strong> seleccionados</span>
-      <span class="nota-historial">Las nuevas gestiones se guardan en el historial sin modificar los datos originales.</span>
-    </section>
 
     <!-- Vista de escritorio -->
     <div class="tabla-contenedor vista-escritorio" *ngIf="!cargando && itdsFiltrados.length > 0">

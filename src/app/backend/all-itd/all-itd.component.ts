@@ -536,7 +536,7 @@ export class AllItdComponent implements OnInit {
             </div>
           </div>
           <div class="datos-itd">
-            <span>${escapar(this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'))}</span>
+            <span>Fecha ITD: ${escapar(this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'))}</span>
             <strong>Folio: ${escapar(String(itd.folio).padStart(4, '0'))}</strong>
           </div>
         </header>

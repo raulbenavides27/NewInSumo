@@ -43,13 +43,23 @@
         <!-- DATOS GENERALES -->
         <ion-grid class="datos-generales">
           <ion-row>
-            <!-- FECHA -->
+            <!-- FECHA ITD: AUTOMÁTICA -->
             <ion-col size="6">
-              <ion-label>Fecha</ion-label>
+              <ion-label>Fecha ITD</ion-label>
+              <ion-input
+                fill="outline"
+                [value]="modoEdicion ? (itd.fechaCreacion | date:'dd/MM/yyyy') : (itd.fechaCreacion | date:'dd/MM/yyyy')"
+                readonly>
+              </ion-input>
+            </ion-col>
+
+            <!-- FECHA DE RECEPCIÓN: EDITABLE -->
+            <ion-col size="6">
+              <ion-label>Fecha de recepción</ion-label>
               <ion-input
                 fill="outline"
                 type="date"
-                [(ngModel)]="itd.fechaDeclarada">
+                [(ngModel)]="itd.fechaRecepcion">
               </ion-input>
             </ion-col>
 

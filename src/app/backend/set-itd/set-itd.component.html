@@ -48,7 +48,7 @@
               <ion-label>Fecha ITD</ion-label>
               <ion-input
                 fill="outline"
-                [value]="modoEdicion ? (itd.fechaCreacion | date:'dd/MM/yyyy') : (itd.fechaCreacion | date:'dd/MM/yyyy')"
+                [value]="itd.fechaCreacion | date:'dd/MM/yyyy'"
                 readonly>
               </ion-input>
             </ion-col>

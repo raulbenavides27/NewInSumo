@@ -1,0 +1,14 @@
+{
+  "name": "newinsumo-itd-migration",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Migración local y controlada de ITD históricos a Firestore",
+  "scripts": {
+    "preview": "node import-itds.js",
+    "import": "node import-itds.js --apply"
+  },
+  "dependencies": {
+    "csv-parse": "5.6.0",
+    "firebase-admin": "13.5.0"
+  }
+}

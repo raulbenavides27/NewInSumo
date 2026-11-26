@@ -1,0 +1,8 @@
+node_modules/
+input/
+reports/
+*.csv
+*.json
+!package.json
+!README.md
+!import-itds.js

@@ -14,6 +14,7 @@ import { AllItdComponent } from './backend/all-itd/all-itd.component';
 import { AuthGuard } from './guards/auth.guard';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { HomeComponent } from './pages/home/home.component';
+import { AdministracionComponent } from './pages/administracion/administracion.component';
 
 const routes: Routes = [
 
@@ -55,6 +56,11 @@ const routes: Routes = [
 {
   path: 'home',
   component: HomeComponent,
+  canActivate: [AuthGuard]
+},
+{
+  path: 'administracion',
+  component: AdministracionComponent,
   canActivate: [AuthGuard]
 },
   {

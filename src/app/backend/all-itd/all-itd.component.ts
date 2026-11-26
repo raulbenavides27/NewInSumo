@@ -30,6 +30,7 @@ export class AllItdComponent implements OnInit {
   editandoItdId: string | null = null;
   modoSeleccion = false;
   seleccionadosIds = new Set<string>();
+  observacionesExpandidas = new Set<string>();
   private readonly claveSeleccionStorage = 'newinsumo_itd_seleccionados';
   totalRegistros = 0;
   totalSeleccionados = 0;
@@ -175,6 +176,14 @@ export class AllItdComponent implements OnInit {
       alert('No fue posible guardar la gestión. Inténtalo nuevamente.');
     } finally {
       this.guardandoGestion = false;
+    }
+  }
+
+  toggleObservacion(id: string): void {
+    if (this.observacionesExpandidas.has(id)) {
+      this.observacionesExpandidas.delete(id);
+    } else {
+      this.observacionesExpandidas.add(id);
     }
   }
 
@@ -336,7 +345,7 @@ export class AllItdComponent implements OnInit {
       return;
     }
 
-    const encabezados = ['Folio', 'Fecha ITD', 'Fecha de recepción', 'Seller', 'Código seller', 'Documento', 'OC/Pedido', 'Número seguimiento', 'SKU', 'Descripción producto', 'Cantidad', 'Estado producto', 'Observaciones gestión', 'Compensación (%)', 'Estado gestión', 'Responsable creación', 'Cargo creación', 'Detalle estado'];
+    const encabezados = ['Folio', 'Fecha ITD', 'Fecha de recepción', 'Seller', 'Código seller', 'Documento', 'OC/Pedido', 'Número seguimiento', 'SKU', 'Descripción producto', 'Cantidad', 'Estado producto', 'Observaciones gestión', 'Compensación (%)', 'Estado gestión', 'Responsable creación', 'Cargo creación', 'Observaciones ITD'];
     const filas: unknown[][] = [];
     registros.forEach(itd => {
       const productos = itd.productos?.length ? itd.productos : [null];
@@ -397,7 +406,7 @@ export class AllItdComponent implements OnInit {
         '<p>Fecha de recepción: ' + escapar(fecha(itd.fechaRecepcion || itd.fechaDeclarada || '')) + '</p>' +
         '<table><thead><tr><th>SKU</th><th>Descripción</th><th>Cantidad</th><th>Documento</th><th>OC / Pedido</th><th>N.º Seguimiento</th><th>Estado</th></tr></thead><tbody>' + filas + '</tbody></table>' +
         '<p>Esto corresponde a una devolución realizada por: <strong>' + escapar(itd.sellerNombre) + '</strong></p>' +
-        '<h2>Detalle del estado</h2><p class="detalle">' + escapar(itd.detalleEstado || 'Sin detalle informado.') + '</p>' + galeria +
+        '<h2>Observaciones</h2><p class="detalle">' + escapar(itd.detalleEstado || 'Sin detalle informado.') + '</p>' + galeria +
         '<div class="firma"><strong>' + escapar(itd.responsableCreacion) + '</strong><span>' + escapar(itd.cargoCreacion) + '</span></div></section>';
     }).join('');
     ventana.document.open();

@@ -1,50 +1,38 @@
 export type UsuarioRol =
   | 'ADMIN'
   | 'SUPERVISOR'
-  | 'OPERADOR';
+  | 'OPERADOR'
+  | 'COMERCIAL';
 
 export type UsuarioEstado =
   | 'ACTIVO'
   | 'INACTIVO';
 
 export interface Usuario {
-  /**
-   * UID generado por Firebase Authentication.
-   */
+  /** UID generado por Firebase Authentication. */
   uid: string;
 
-  /**
-   * Nombre del usuario.
-   */
+  /** Nombre del usuario. */
   nombre: string;
 
-  /**
-   * Correo utilizado para el acceso.
-   */
+  /** Correo utilizado para el acceso. */
   email: string;
 
-  /**
-   * URL de la fotografía del usuario.
-   */
+  /** URL de la fotografía del usuario. */
   foto: string;
 
-  /**
-   * Rol dentro del sistema.
-   */
+  /** Rol de acceso y permisos dentro del sistema. */
   rol: UsuarioRol;
 
-  /**
-   * Cargo que desempeña el usuario.
-   */
+  /** Cargo o función laboral (ej.: Coordinador Logístico, KAM). */
   cargo: string;
 
-  /**
-   * Estado del usuario.
-   */
+  /** Área organizacional (ej.: Logística, Comercial). */
+  area: string;
+
+  /** Estado del usuario. */
   estado: UsuarioEstado;
 
-  /**
-   * Fecha de creación del registro.
-   */
+  /** Fecha de creación del registro. */
   fechaCreacion: Date;
-} 
+}

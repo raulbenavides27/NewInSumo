@@ -217,6 +217,17 @@ export class AllItdComponent implements OnInit {
     return fecha instanceof Date ? fecha : new Date(fecha || 0);
   }
 
+  fechaItd(itd: Itd): string {
+    return this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL');
+  }
+
+  fechaRecepcion(itd: Itd): string {
+    const valor = itd.fechaRecepcion || itd.fechaDeclarada || '';
+    if (!valor) return 'Sin fecha';
+    const partes = valor.split('-');
+    return partes.length === 3 ? partes[2] + '/' + partes[1] + '/' + partes[0] : valor;
+  }
+
 
   toggleModoSeleccion(): void {
     this.modoSeleccion = !this.modoSeleccion;
@@ -310,7 +321,7 @@ export class AllItdComponent implements OnInit {
     this.itds.sort((a, b) => {
       const diferencia = this.ordenActual.startsWith('folio')
         ? Number(a.folio) - Number(b.folio)
-        : new Date(a.fechaDeclarada || 0).getTime() - new Date(b.fechaDeclarada || 0).getTime();
+        : new Date(a.fechaRecepcion || a.fechaDeclarada || 0).getTime() - new Date(b.fechaRecepcion || b.fechaDeclarada || 0).getTime();
       return ascendente ? diferencia : -diferencia;
     });
   }
@@ -325,13 +336,13 @@ export class AllItdComponent implements OnInit {
       return;
     }
 
-    const encabezados = ['Folio', 'Fecha declarada', 'Fecha creación', 'Seller', 'Código seller', 'Documento', 'OC/Pedido', 'Número seguimiento', 'SKU', 'Descripción producto', 'Cantidad', 'Estado producto', 'Observaciones gestión', 'Compensación (%)', 'Estado gestión', 'Responsable creación', 'Cargo creación', 'Detalle estado'];
+    const encabezados = ['Folio', 'Fecha ITD', 'Fecha de recepción', 'Seller', 'Código seller', 'Documento', 'OC/Pedido', 'Número seguimiento', 'SKU', 'Descripción producto', 'Cantidad', 'Estado producto', 'Observaciones gestión', 'Compensación (%)', 'Estado gestión', 'Responsable creación', 'Cargo creación', 'Detalle estado'];
     const filas: unknown[][] = [];
     registros.forEach(itd => {
       const productos = itd.productos?.length ? itd.productos : [null];
       productos.forEach(producto => {
         filas.push([
-          itd.folio, itd.fechaDeclarada, this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'),
+          itd.folio, this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'), itd.fechaRecepcion || itd.fechaDeclarada || '',
           itd.sellerNombre, itd.sellerCodigo ?? '', itd.documento, itd.ocPedido, itd.numeroSeguimiento,
           producto?.sku ?? '', producto?.descripcion ?? '', producto?.cantidad ?? '', producto?.estadoProducto ?? '',
           itd.ultimaGestion?.observacion || '', itd.ultimaGestion?.compensacion ?? '',
@@ -381,9 +392,9 @@ export class AllItdComponent implements OnInit {
       const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0));
       const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
       return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
-        '<header class="empresa-header"><div class="identidad-empresa"><img src="assets/imgs/logo-alcazar.webp" alt="Alcázar"><div><strong>Comercial Coyahue SpA</strong><span>RUT: 78.644.350-4</span><small>Marca: Alcázar</small></div></div><div class="datos-itd"><span>' + escapar(fecha(itd.fechaDeclarada)) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div></header>' +
+        '<header class="empresa-header"><div class="identidad-empresa"><img src="assets/imgs/logo-alcazar.webp" alt="Alcázar"><div><strong>Comercial Coyahue SpA</strong><span>RUT: 78.644.350-4</span><small>Marca: Alcázar</small></div></div><div class="datos-itd"><span>' + escapar(this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL')) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div></header>' +
         '<p><strong>Atención a ' + escapar(itd.sellerNombre) + '</strong></p><h1>Informe de recepción de producto</h1>' +
-        '<p>Fecha declarada: ' + escapar(fecha(itd.fechaDeclarada)) + '</p>' +
+        '<p>Fecha de recepción: ' + escapar(fecha(itd.fechaRecepcion || itd.fechaDeclarada || '')) + '</p>' +
         '<table><thead><tr><th>SKU</th><th>Descripción</th><th>Cantidad</th><th>Documento</th><th>OC / Pedido</th><th>N.º Seguimiento</th><th>Estado</th></tr></thead><tbody>' + filas + '</tbody></table>' +
         '<p>Esto corresponde a una devolución realizada por: <strong>' + escapar(itd.sellerNombre) + '</strong></p>' +
         '<h2>Detalle del estado</h2><p class="detalle">' + escapar(itd.detalleEstado || 'Sin detalle informado.') + '</p>' + galeria +
@@ -525,13 +536,13 @@ export class AllItdComponent implements OnInit {
             </div>
           </div>
           <div class="datos-itd">
-            <span>${escapar(fecha(itd.fechaDeclarada))}</span>
+            <span>${escapar(this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL'))}</span>
             <strong>Folio: ${escapar(String(itd.folio).padStart(4, '0'))}</strong>
           </div>
         </header>
         <div class="destinatario">Atención a ${escapar(itd.sellerNombre)}</div>
         <h1>Informe de recepción de producto</h1>
-        <p class="fecha-recepcion">Fecha declarada: ${escapar(fecha(itd.fechaDeclarada))}</p>
+        <p class="fecha-recepcion">Fecha de recepción: ${escapar(fecha(itd.fechaRecepcion || itd.fechaDeclarada || ''))}</p>
         <table>
           <thead><tr><th>SKU</th><th>Descripción</th><th>Cantidad</th><th>Documento</th><th>OC / Pedido</th><th>N.º Seguimiento</th><th>Obs.</th></tr></thead>
           <tbody>${productos}</tbody>

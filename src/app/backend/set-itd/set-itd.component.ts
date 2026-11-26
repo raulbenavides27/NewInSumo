@@ -149,7 +149,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
       id: '',
       folio: 0,
       fechaCreacion: new Date(),
-      fechaDeclarada: this.obtenerFechaLocal(),
+      fechaRecepcion: this.obtenerFechaLocal(),
       sellerId: '',
       sellerNombre: '',
       sellerCodigo: null,
@@ -282,7 +282,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
         await this.router.navigate(['/all-itd']);
         return;
       }
-      this.itd = { ...registro, fechaCreacion: this.convertirFecha(registro.fechaCreacion), productos: (registro.productos || []).map(producto => ({ ...producto })), fotos: [...(registro.fotos || [])] };
+      this.itd = { ...registro, fechaCreacion: this.convertirFecha(registro.fechaCreacion), fechaRecepcion: registro.fechaRecepcion || registro.fechaDeclarada || this.obtenerFechaLocal(), productos: (registro.productos || []).map(producto => ({ ...producto })), fotos: [...(registro.fotos || [])] };
       this.fotosExistentes = await Promise.all((registro.fotos || []).map(async referencia => {
         try { return await this.firestorageService.getImageUrl(referencia, id); }
         catch (error) { console.warn('No se pudo resolver la fotografía del ITD:', referencia, error); return referencia; }
@@ -339,7 +339,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
       fotos: [...this.fotosExistentes, ...fotosNuevas],
       productos: this.itd.productos.map(producto => ({ ...producto }))
     };
-    const campos = ['fechaDeclarada','sellerId','sellerNombre','sellerCodigo','documento','ocPedido','numeroSeguimiento','productos','detalleEstado','fotos'];
+    const campos = ['fechaRecepcion','sellerId','sellerNombre','sellerCodigo','documento','ocPedido','numeroSeguimiento','productos','detalleEstado','fotos'];
     const cambios: any = {};
     campos.forEach(campo => {
       const antes = (original as any)[campo];
@@ -426,8 +426,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
   }
 
   validarFormulario(): boolean {
-    if (!this.itd.fechaDeclarada) {
-      alert('Debe ingresar la fecha.');
+    if (!this.itd.fechaRecepcion) {
+      alert('Debe ingresar la fecha de recepción.');
       return false;
     }
 

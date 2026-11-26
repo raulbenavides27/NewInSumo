@@ -75,6 +75,7 @@ export class PerfilComponent implements OnInit {
       foto: '',
       rol: 'OPERADOR',
       cargo: '',
+      area: '',
       estado: 'ACTIVO',
       fechaCreacion: new Date(),
     };

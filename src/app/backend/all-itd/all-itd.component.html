@@ -97,12 +97,7 @@
                   <small>SKU {{ producto.sku || '—' }} · Cant. {{ producto.cantidad }}</small>
                 </div>
               </td>
-              <td class="celda-observacion">
-                <span [class.observacion-recortada]="!observacionesExpandidas.has(itd.id)">{{ itd.detalleEstado || 'Sin observaciones' }}</span>
-                <button class="btn-ver-observacion" type="button" *ngIf="(itd.detalleEstado || '').length > 110" (click)="toggleObservacion(itd.id)">
-                  {{ observacionesExpandidas.has(itd.id) ? 'Ver menos' : 'Ver más' }}
-                </button>
-              </td>
+              <td class="celda-observacion">{{ itd.ultimaGestion?.observacion || 'Sin observaciones' }}</td>
               <td class="celda-compensacion">{{ itd.ultimaGestion?.compensacion ?? '—' }}<span *ngIf="itd.ultimaGestion">%</span></td>
               <td>
                 <ion-badge [color]="estadoGestion(itd) === 'CERRADO' ? 'success' : 'warning'">
@@ -171,10 +166,7 @@
         <div class="tarjeta-gestion">
           <div class="dato-movil">
             <span>Observaciones</span>
-            <strong class="texto-observacion" [class.observacion-recortada]="!observacionesExpandidas.has(itd.id)">{{ itd.detalleEstado || 'Sin observaciones' }}</strong>
-            <button class="btn-ver-observacion" type="button" *ngIf="(itd.detalleEstado || '').length > 110" (click)="toggleObservacion(itd.id)">
-              {{ observacionesExpandidas.has(itd.id) ? 'Ver menos' : 'Ver más' }}
-            </button>
+            <strong class="texto-observacion">{{ itd.ultimaGestion?.observacion || 'Sin observaciones' }}</strong>
           </div>
           <div class="dato-movil compensacion-movil">
             <span>Compensación</span>

@@ -79,7 +79,8 @@
               <td *ngIf="modoSeleccion"><ion-checkbox [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox></td>
               <td class="celda-folio">
                 <strong>ITD {{ itd.folio | number:'2.0-0' }}</strong>
-                <span>{{ itd.fechaDeclarada }}</span>
+                <span>Fecha ITD: {{ fechaItd(itd) }}</span>
+                <small>Recepción: {{ fechaRecepcion(itd) }}</small>
                 <small>{{ itd.responsableCreacion }}</small>
               </td>
               <td>
@@ -134,7 +135,8 @@
           <div>
             <span class="etiqueta-folio">REGISTRO ITD</span>
             <h2>ITD {{ itd.folio | number:'2.0-0' }}</h2>
-            <p>{{ itd.fechaDeclarada }}</p>
+            <p>Fecha ITD: {{ fechaItd(itd) }}</p>
+            <p>Fecha de recepción: {{ fechaRecepcion(itd) }}</p>
           </div>
           <ion-badge [color]="estadoGestion(itd) === 'CERRADO' ? 'success' : 'warning'">
             {{ estadoGestion(itd) === 'CERRADO' ? 'Cerrado' : 'Abierto' }}

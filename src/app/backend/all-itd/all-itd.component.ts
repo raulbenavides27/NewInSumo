@@ -381,8 +381,8 @@ export class AllItdComponent implements OnInit {
       const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0));
       const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
       return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
-        '<div class="cabecera"><span>' + escapar(fecha(itd.fechaDeclarada)) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div>' +
-        '<p><strong>Atención a ' + escapar(itd.sellerNombre) + '</strong></p><h1>Informe de recepción de producto</h1>' +
+        '<header class="empresa-header"><div class="identidad-empresa"><img src="assets/imgs/logo-alcazar.webp" alt="Alcázar"><div><strong>Comercial Coyahue SpA</strong><span>RUT: 78.644.350-4</span><small>Marca: Alcázar</small></div></div><div class="datos-itd"><span>' + escapar(fecha(itd.fechaDeclarada)) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div></header>' +
+        '<p><strong>Atención a ' + escapar(itd.sellerNombre) + '</strong></p><h1>Informe de recepción de producto</h1>' ,
         '<p>Fecha declarada: ' + escapar(fecha(itd.fechaDeclarada)) + '</p>' +
         '<table><thead><tr><th>SKU</th><th>Descripción</th><th>Cantidad</th><th>Documento</th><th>OC / Pedido</th><th>N.º Seguimiento</th><th>Estado</th></tr></thead><tbody>' + filas + '</tbody></table>' +
         '<p>Esto corresponde a una devolución realizada por: <strong>' + escapar(itd.sellerNombre) + '</strong></p>' +
@@ -390,7 +390,7 @@ export class AllItdComponent implements OnInit {
         '<div class="firma"><strong>' + escapar(itd.responsableCreacion) + '</strong><span>' + escapar(itd.cargoCreacion) + '</span></div></section>';
     }).join('');
     ventana.document.open();
-    ventana.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Informes ITD seleccionados</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font:10pt Arial;color:#171717;line-height:1.35}.cabecera{display:flex;justify-content:space-between}.informe{min-height:260mm}.salto-pagina{break-before:page;page-break-before:always}h1{font-size:17pt;margin:16px 0 12px}h2{font-size:12pt;margin-top:18px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td{border:1px solid #555;padding:6px 5px;text-align:left;overflow-wrap:anywhere;vertical-align:top}th{background:#eee}.detalle{white-space:pre-wrap;overflow-wrap:anywhere}.galeria{display:grid;grid-template-columns:repeat(2,1fr);gap:8mm;margin-top:10mm}.galeria figure{height:66mm;margin:0;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;padding:2mm;break-inside:avoid}.galeria img{max-width:100%;max-height:100%;object-fit:contain}.firma{margin-top:22mm;text-align:right}.firma strong,.firma span{display:block}tr{break-inside:avoid}</style></head><body>' + paginas + '</body></html>');
+    ventana.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><base href="' + window.location.origin + '/"><title>Informes ITD seleccionados</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font:10pt Arial;color:#171717;line-height:1.35}.empresa-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:9px;border-bottom:1px solid #d8d8d8;margin-bottom:14px}.identidad-empresa{display:flex;align-items:center;gap:10px}.identidad-empresa img{display:block;width:105px;max-height:28px;object-fit:contain}.identidad-empresa strong,.identidad-empresa span,.identidad-empresa small{display:block}.identidad-empresa strong{font-size:10pt}.identidad-empresa span,.identidad-empresa small{font-size:8pt;color:#555}.datos-itd{text-align:right;font-size:9pt}.datos-itd span,.datos-itd strong{display:block}.informe{min-height:260mm}.salto-pagina{break-before:page;page-break-before:always}h1{font-size:17pt;margin:16px 0 12px}h2{font-size:12pt;margin-top:18px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td{border:1px solid #555;padding:6px 5px;text-align:left;overflow-wrap:anywhere;vertical-align:top}th{background:#eee}.detalle{white-space:pre-wrap;overflow-wrap:anywhere}.galeria{display:grid;grid-template-columns:repeat(2,1fr);gap:8mm;margin-top:10mm}.galeria figure{height:66mm;margin:0;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;padding:2mm;break-inside:avoid}.galeria img{max-width:100%;max-height:100%;object-fit:contain}.firma{margin-top:22mm;text-align:right}.firma strong,.firma span{display:block}tr{break-inside:avoid}</style></head><body>' + paginas + '</body></html>');
     ventana.document.close();
     const imprimir = (): void => {
       const imagenes = Array.from(ventana.document.images);
@@ -479,14 +479,21 @@ export class AllItdComponent implements OnInit {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Informe de recepción · ITD ${escapar(itd.folio)}</title>
+        <base href="${window.location.origin}/">
         <style>
           @page { size: A4; margin: 12mm; }
           * { box-sizing: border-box; }
           body { margin: 0; color: #171717; font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.35; }
           h1 { margin: 16px 0 12px; font-size: 17pt; }
           h2 { margin: 18px 0 8px; font-size: 12pt; }
-          .cabecera { display: flex; justify-content: space-between; gap: 16px; }
-          .folio { text-align: right; font-weight: bold; }
+          .empresa-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid #d8d8d8; margin-bottom: 14px; }
+          .identidad-empresa { display: flex; align-items: center; gap: 10px; }
+          .identidad-empresa img { display: block; width: 105px; max-height: 28px; object-fit: contain; }
+          .identidad-empresa strong, .identidad-empresa span, .identidad-empresa small { display: block; }
+          .identidad-empresa strong { font-size: 10pt; }
+          .identidad-empresa span, .identidad-empresa small { font-size: 8pt; color: #555; }
+          .datos-itd { text-align: right; font-size: 9pt; }
+          .datos-itd span, .datos-itd strong { display: block; }
           .destinatario { margin: 18px 0; font-weight: bold; }
           .fecha-recepcion { margin: 12px 0; }
           table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 8pt; }
@@ -508,10 +515,20 @@ export class AllItdComponent implements OnInit {
         </style>
       </head>
       <body>
-        <div class="cabecera">
-          <div>${escapar(fecha(itd.fechaDeclarada))}</div>
-          <div class="folio">Folio: ${escapar(String(itd.folio).padStart(4, '0'))}</div>
-        </div>
+        <header class="empresa-header">
+          <div class="identidad-empresa">
+            <img src="assets/imgs/logo-alcazar.webp" alt="Alcázar">
+            <div>
+              <strong>Comercial Coyahue SpA</strong>
+              <span>RUT: 78.644.350-4</span>
+              <small>Marca: Alcázar</small>
+            </div>
+          </div>
+          <div class="datos-itd">
+            <span>${escapar(fecha(itd.fechaDeclarada))}</span>
+            <strong>Folio: ${escapar(String(itd.folio).padStart(4, '0'))}</strong>
+          </div>
+        </header>
         <div class="destinatario">Atención a ${escapar(itd.sellerNombre)}</div>
         <h1>Informe de recepción de producto</h1>
         <p class="fecha-recepcion">Fecha declarada: ${escapar(fecha(itd.fechaDeclarada))}</p>

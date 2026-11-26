@@ -1,0 +1,82 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Volver"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Administración</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ng-container *ngIf="!cargando; else loading">
+    <ion-card *ngIf="!accesoPermitido">
+      <ion-card-header>
+        <ion-card-title>Acceso restringido</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        Esta sección está disponible únicamente para usuarios con rol ADMIN activo.
+      </ion-card-content>
+    </ion-card>
+
+    <ng-container *ngIf="accesoPermitido">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Usuarios y perfiles</ion-card-title>
+          <ion-card-subtitle>Administra roles, cargos, áreas y estados de acceso.</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item *ngFor="let usuario of usuarios">
+              <ion-label>
+                <h2>{{ usuario.nombre || 'Usuario sin nombre' }}</h2>
+                <p>{{ usuario.email }}</p>
+                <p>{{ usuario.rol }} · {{ usuario.cargo || 'Sin cargo' }} · {{ usuario.area || 'Sin área' }}</p>
+                <p>Estado: {{ usuario.estado }}</p>
+              </ion-label>
+              <ion-button slot="end" fill="outline" (click)="editar(usuario)">Editar</ion-button>
+            </ion-item>
+          </ion-list>
+          <p *ngIf="usuarios.length === 0">No hay usuarios registrados.</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card *ngIf="usuarioEditando">
+        <ion-card-header>
+          <ion-card-title>Editar perfil</ion-card-title>
+          <ion-card-subtitle>{{ usuarioEditando.nombre }} · {{ usuarioEditando.email }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="stacked">Rol y permisos</ion-label>
+            <ion-select [(ngModel)]="usuarioEditando.rol" interface="popover">
+              <ion-select-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Cargo</ion-label>
+            <ion-input [(ngModel)]="usuarioEditando.cargo" placeholder="Ej.: Coordinador Logístico o KAM"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Área</ion-label>
+            <ion-select [(ngModel)]="usuarioEditando.area" interface="popover">
+              <ion-select-option *ngFor="let area of areas" [value]="area">{{ area }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Estado</ion-label>
+            <ion-select [(ngModel)]="usuarioEditando.estado" interface="popover">
+              <ion-select-option *ngFor="let estado of estados" [value]="estado">{{ estado }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div class="ion-padding-top">
+            <ion-button expand="block" [disabled]="guardando" (click)="guardarCambios()">Guardar cambios</ion-button>
+            <ion-button expand="block" fill="clear" color="medium" (click)="cancelarEdicion()">Cancelar</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+  </ng-container>
+  <ng-template #loading>
+    <div class="ion-text-center ion-padding"><ion-spinner></ion-spinner><p>Cargando administración...</p></div>
+  </ng-template>
+</ion-content>

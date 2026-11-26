@@ -27,8 +27,12 @@ export interface ItdProducto {
 export interface Itd {
   id: string;
   folio: number;
+  /** Fecha y hora automática e inmutable de creación del ITD. */
   fechaCreacion: Date;
-  fechaDeclarada: string;
+  /** Fecha real de recepción del producto, editable. */
+  fechaRecepcion: string;
+  /** Campo legado para leer ITD históricos creados antes del cambio. */
+  fechaDeclarada?: string;
   sellerId: string;
   sellerNombre: string;
   sellerCodigo: number | null;

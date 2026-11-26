@@ -8,12 +8,14 @@ import { RouterModule } from '@angular/router';
 import { ItdComponent } from './itd/itd.component';
 import { HomeComponent } from './home/home.component';
 import { PerfilComponent } from './perfil/perfil.component';
+import { AdministracionComponent } from './administracion/administracion.component';
 
 @NgModule({
   declarations: [
     ItdComponent,
     HomeComponent,
-    PerfilComponent
+    PerfilComponent,
+    AdministracionComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +27,8 @@ import { PerfilComponent } from './perfil/perfil.component';
   exports: [
     ItdComponent,
     HomeComponent,
-    PerfilComponent
+    PerfilComponent,
+    AdministracionComponent
   ]
 })
 export class PagesModule { }

@@ -382,7 +382,7 @@ export class AllItdComponent implements OnInit {
       const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
       return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
         '<header class="empresa-header"><div class="identidad-empresa"><img src="assets/imgs/logo-alcazar.webp" alt="Alcázar"><div><strong>Comercial Coyahue SpA</strong><span>RUT: 78.644.350-4</span><small>Marca: Alcázar</small></div></div><div class="datos-itd"><span>' + escapar(fecha(itd.fechaDeclarada)) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div></header>' +
-        '<p><strong>Atención a ' + escapar(itd.sellerNombre) + '</strong></p><h1>Informe de recepción de producto</h1>' ,
+        '<p><strong>Atención a ' + escapar(itd.sellerNombre) + '</strong></p><h1>Informe de recepción de producto</h1>' +
         '<p>Fecha declarada: ' + escapar(fecha(itd.fechaDeclarada)) + '</p>' +
         '<table><thead><tr><th>SKU</th><th>Descripción</th><th>Cantidad</th><th>Documento</th><th>OC / Pedido</th><th>N.º Seguimiento</th><th>Estado</th></tr></thead><tbody>' + filas + '</tbody></table>' +
         '<p>Esto corresponde a una devolución realizada por: <strong>' + escapar(itd.sellerNombre) + '</strong></p>' +

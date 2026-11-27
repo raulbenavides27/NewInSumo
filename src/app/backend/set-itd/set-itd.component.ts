@@ -16,6 +16,7 @@ interface FotoSeleccionada {
   archivo: File;
   nombre: string;
   url: string;
+  esVideo: boolean;
 }
 
 @Component({
@@ -212,7 +213,11 @@ export class SetItdComponent implements OnInit, OnDestroy {
     const archivos = Array.from(input.files ?? []);
 
     for (const archivo of archivos) {
-      if (!archivo.type.startsWith('image/')) {
+      const esImagen = archivo.type.startsWith('image/');
+      const esVideo = archivo.type.startsWith('video/');
+      if (!esImagen && !esVideo) continue;
+      if (archivo.size > 100 * 1024 * 1024) {
+        alert('El archivo ' + archivo.name + ' supera el máximo permitido de 100 MB.');
         continue;
       }
 
@@ -230,7 +235,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
       this.fotosSeleccionadas.push({
         archivo,
         nombre: archivo.name,
-        url: URL.createObjectURL(archivo)
+        url: URL.createObjectURL(archivo),
+        esVideo
       });
 
       this.itd.fotos.push(archivo.name);

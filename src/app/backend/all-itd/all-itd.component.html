@@ -56,12 +56,13 @@
         <thead>
           <tr>
             <th *ngIf="modoSeleccion" class="th-seleccion">
+              <div class="control-seleccion-encabezado"><span>Seleccionar</span>
               <ion-checkbox
                 [checked]="todosVisiblesSeleccionados()"
                 [indeterminate]="totalSeleccionados > 0 && !todosVisiblesSeleccionados()"
                 (ionChange)="cambiarSeleccionVisibles($any($event).detail.checked)"
                 aria-label="Seleccionar o desmarcar todos los ITD visibles">
-              </ion-checkbox>
+              </ion-checkbox></div>
             </th>
             <th class="col-folio">Folio</th>
             <th class="col-fecha">Fecha ITD</th>
@@ -79,10 +80,11 @@
         <tbody>
           <ng-container *ngFor="let itd of itdsFiltrados">
             <tr>
-              <td *ngIf="modoSeleccion"><ion-checkbox [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox></td>
+              <td *ngIf="modoSeleccion" class="td-seleccion"><div class="control-seleccion-fila"><ion-checkbox [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox><span>ITD {{ itd.folio | number:'2.0-0' }}</span></div></td>
               <td class="celda-folio">
                 <strong>ITD {{ itd.folio | number:'2.0-0' }}</strong>
                 <small>{{ itd.responsableCreacion }}</small>
+                <div class="evidencias-listado" *ngIf="itd.fotos?.length"><span>{{ itd.fotos.length }} evidencia(s)</span><a *ngFor="let evidencia of itd.fotos; let i = index" [href]="evidencia" target="_blank" rel="noopener">{{ esVideo(evidencia) ? 'Ver video' : 'Ver foto' }} {{ i + 1 }}</a></div>
               </td>
               <td class="celda-fecha col-fecha">{{ fechaItd(itd) }}</td>
               <td class="celda-fecha col-fecha-recepcion">{{ fechaRecepcion(itd) }}</td>
@@ -119,7 +121,7 @@
               </td>
             </tr>
             <tr class="fila-edicion" *ngIf="editandoItdId === itd.id">
-              <td [attr.colspan]="modoSeleccion ? 11 : 10">
+              <td [attr.colspan]="modoSeleccion ? 12 : 11">
                 <ng-container *ngTemplateOutlet="editorGestion; context: {$implicit: itd}"></ng-container>
               </td>
             </tr>
@@ -131,13 +133,14 @@
     <!-- Vista móvil: tarjetas, sin desplazamiento horizontal -->
     <section class="lista-movil" *ngIf="!cargando && itdsFiltrados.length > 0">
       <article class="tarjeta-itd" *ngFor="let itd of itdsFiltrados">
-        <ion-item lines="none" *ngIf="modoSeleccion"><ion-checkbox slot="start" [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox><ion-label>Seleccionar ITD {{ itd.folio }}</ion-label></ion-item>
+        <ion-item lines="none" *ngIf="modoSeleccion" class="seleccion-movil"><ion-checkbox slot="start" [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox><ion-label>Seleccionar ITD {{ itd.folio }}</ion-label></ion-item>
         <div class="tarjeta-cabecera">
           <div>
             <span class="etiqueta-folio">REGISTRO ITD</span>
             <h2>ITD {{ itd.folio | number:'2.0-0' }}</h2>
             <p>Fecha ITD: {{ fechaItd(itd) }}</p>
             <p>Fecha de recepción: {{ fechaRecepcion(itd) }}</p>
+            <div class="evidencias-listado evidencias-movil" *ngIf="itd.fotos?.length"><span>{{ itd.fotos.length }} evidencia(s)</span><a *ngFor="let evidencia of itd.fotos; let i = index" [href]="evidencia" target="_blank" rel="noopener">{{ esVideo(evidencia) ? 'Ver video' : 'Ver foto' }} {{ i + 1 }}</a></div>
           </div>
           <ion-badge [color]="estadoGestion(itd) === 'CERRADO' ? 'success' : 'warning'">
             {{ estadoGestion(itd) === 'CERRADO' ? 'Cerrado' : 'Abierto' }}

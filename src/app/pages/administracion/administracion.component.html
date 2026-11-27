@@ -47,23 +47,23 @@
         </ion-card-header>
         <ion-card-content>
           <ion-item>
-            <ion-label position="stacked">Rol y permisos</ion-label>
+            <ion-label position="floating">Rol</ion-label>
             <ion-select [(ngModel)]="usuarioEditando.rol" interface="popover">
               <ion-select-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-label position="stacked">Cargo</ion-label>
+            <ion-label position="floating">Cargo</ion-label>
             <ion-input [(ngModel)]="usuarioEditando.cargo" placeholder="Ej.: Coordinador Logístico o KAM"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="stacked">Área</ion-label>
+            <ion-label position="floating">Área</ion-label>
             <ion-select [(ngModel)]="usuarioEditando.area" interface="popover">
               <ion-select-option *ngFor="let area of areas" [value]="area">{{ area }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
-            <ion-label position="stacked">Estado</ion-label>
+            <ion-label position="floating">Estado</ion-label>
             <ion-select [(ngModel)]="usuarioEditando.estado" interface="popover">
               <ion-select-option *ngFor="let estado of estados" [value]="estado">{{ estado }}</ion-select-option>
             </ion-select>
@@ -72,6 +72,87 @@
             <ion-button expand="block" [disabled]="guardando" (click)="guardarCambios()">Guardar cambios</ion-button>
             <ion-button expand="block" fill="clear" color="medium" (click)="cancelarEdicion()">Cancelar</ion-button>
           </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="permissions-card">
+        <ion-card-header>
+          <ion-card-title>Roles y permisos</ion-card-title>
+          <ion-card-subtitle>Configura los permisos generales de cada rol y las excepciones de usuarios específicos.</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-segment [(ngModel)]="vistaPermisos">
+            <ion-segment-button value="rol">
+              <ion-label>Por rol</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="usuario">
+              <ion-label>Por usuario</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <section *ngIf="vistaPermisos === 'rol'" class="permission-section">
+            <ion-item class="selector-item">
+              <ion-label position="floating">Seleccionar rol</ion-label>
+              <ion-select [value]="rolSeleccionado" (ionChange)="cargarPermisosRol($event.detail.value)" interface="popover">
+                <ion-select-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <p class="section-hint">Los permisos configurados aquí serán la base para todos los usuarios que tengan este rol.</p>
+
+            <div class="permission-table">
+              <div class="permission-row permission-header">
+                <span>Módulo</span>
+                <span *ngFor="let accion of acciones">{{ accion.label }}</span>
+              </div>
+              <div class="permission-row" *ngFor="let modulo of modulos">
+                <strong>{{ modulo.label }}</strong>
+                <ion-checkbox
+                  *ngFor="let accion of acciones"
+                  [checked]="permisosRolEditando[modulo.key][accion.key]"
+                  (ionChange)="cambiarPermisoRol(modulo.key, accion.key, $event.detail.checked)">
+                </ion-checkbox>
+              </div>
+            </div>
+            <ion-button expand="block" class="save-permissions" [disabled]="guardandoPermisos" (click)="guardarPermisosRol()">
+              Guardar permisos del rol
+            </ion-button>
+          </section>
+
+          <section *ngIf="vistaPermisos === 'usuario'" class="permission-section">
+            <ion-item class="selector-item">
+              <ion-label position="floating">Seleccionar usuario</ion-label>
+              <ion-select [value]="usuarioPermisosUid" (ionChange)="cargarPermisosUsuario($event.detail.value)" interface="popover" placeholder="Elige un usuario">
+                <ion-select-option *ngFor="let usuario of usuarios" [value]="usuario.uid">
+                  {{ usuario.nombre || usuario.email }} · {{ usuario.rol }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ng-container *ngIf="usuarioPermisosUid">
+              <p class="section-hint">Define excepciones individuales. «Heredar» mantiene el permiso que tenga asignado el rol.</p>
+              <div class="user-permission-list">
+                <div class="user-permission-row" *ngFor="let modulo of modulos">
+                  <strong>{{ modulo.label }}</strong>
+                  <div class="user-permission-actions">
+                    <div class="user-permission-action" *ngFor="let accion of acciones">
+                      <ion-label>{{ accion.label }}</ion-label>
+                      <ion-select
+                        [value]="obtenerPermisoUsuario(modulo.key, accion.key)"
+                        (ionChange)="cambiarPermisoUsuario(modulo.key, accion.key, $event.detail.value)"
+                        interface="popover">
+                        <ion-select-option value="HEREDAR">Heredar</ion-select-option>
+                        <ion-select-option value="PERMITIR">Permitir</ion-select-option>
+                        <ion-select-option value="DENEGAR">Denegar</ion-select-option>
+                      </ion-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ion-button expand="block" class="save-permissions" [disabled]="guardandoPermisos" (click)="guardarPermisosUsuario()">
+                Guardar excepciones del usuario
+              </ion-button>
+            </ng-container>
+          </section>
         </ion-card-content>
       </ion-card>
     </ng-container>

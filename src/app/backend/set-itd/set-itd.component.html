@@ -38,6 +38,16 @@
         <p *ngIf="modoEdicion">El folio y los datos de creación se mantienen. Las correcciones quedarán registradas.</p>
       </ion-card-header>
 
+      <div class="progreso-operacion" *ngIf="cargando" role="status" aria-live="polite">
+        <div class="progreso-operacion-cabecera">
+          <ion-spinner name="crescent"></ion-spinner>
+          <strong>{{ estadoOperacion || 'Procesando ITD...' }}</strong>
+          <span>{{ progresoCarga }}%</span>
+        </div>
+        <ion-progress-bar [value]="progresoCarga / 100" color="primary"></ion-progress-bar>
+        <small>No cierres esta pantalla mientras se completa la operación.</small>
+      </div>
+
       <ion-card-content>
 
         <!-- DATOS GENERALES -->
@@ -368,7 +378,7 @@
               <ion-button
                 size="small"
                 expand="block"
-                (click)="cancelar()">
+                (click)="cancelar()" [disabled]="cargando">
                 {{ modoEdicion ? 'Volver al listado' : 'Limpiar formulario' }}
               </ion-button>
             </ion-col>

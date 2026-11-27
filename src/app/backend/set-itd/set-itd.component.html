@@ -242,20 +242,20 @@
     <div class="fotos-control">
       <div class="fotos-galeria" *ngIf="modoEdicion && fotosExistentes.length > 0">
         <div class="foto-preview" *ngFor="let fotoUrl of fotosExistentes; let i = index">
-          <img *ngIf="!fotosConError.has(fotoUrl)" [src]="fotoUrl" [alt]="'Fotografía existente ' + (i + 1)" (error)="marcarFotoNoDisponible(fotoUrl)">
+          <video *ngIf="esVideo(fotoUrl) && !fotosConError.has(fotoUrl)" [src]="fotoUrl" controls playsinline></video><img *ngIf="!esVideo(fotoUrl) && !fotosConError.has(fotoUrl)" [src]="fotoUrl" alt="Fotografía existente" (error)="marcarFotoNoDisponible(fotoUrl)">
           <div class="foto-no-disponible" *ngIf="fotosConError.has(fotoUrl)">No se pudo cargar esta fotografía</div>
           <div class="foto-preview-pie"><span>Fotografía guardada {{ i + 1 }}</span><ion-button type="button" fill="clear" color="danger" size="small" aria-label="Quitar fotografía existente" (click)="quitarFotoExistente(fotoUrl)"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-button></div>
         </div>
       </div>
       <p class="fotos-ayuda" *ngIf="modoEdicion && fotosExistentes.length > 0">
-        Las fotografías existentes se conservan. Puedes agregar nuevas fotografías.
+        Las evidencias existentes se conservan. Puedes agregar fotografías y videos.
       </p>
       <!-- ESCRITORIO Y GALERÍA DEL MÓVIL -->
       <input
         #selectorGaleria
         class="input-fotos-oculto"
         type="file"
-        accept="image/*"
+        accept="image/*,video/*"
         multiple
         (change)="agregarFoto($event)">
 
@@ -268,6 +268,8 @@
         capture="environment"
         (change)="agregarFoto($event)">
 
+      <input #selectorVideo class="input-fotos-oculto" type="file" accept="video/*" capture="environment" (change)="agregarFoto($event)">
+
       <div class="fotos-botones">
         <ion-button
           type="button"
@@ -276,7 +278,7 @@
           (click)="selectorGaleria.click()">
 
           <ion-icon slot="start" name="images-outline"></ion-icon>
-          Elegir fotos
+          Elegir archivos
         </ion-button>
 
         <ion-button
@@ -288,16 +290,20 @@
           <ion-icon slot="start" name="camera-outline"></ion-icon>
           Tomar foto
         </ion-button>
+        <ion-button type="button" fill="outline" class="boton-fotos" (click)="selectorVideo.click()">
+          <ion-icon slot="start" name="videocam-outline"></ion-icon>
+          Grabar video
+        </ion-button>
       </div>
 
       <p class="fotos-ayuda">
-        Puedes seleccionar varias imágenes y revisarlas antes de guardar.
+        Puedes adjuntar fotografías o videos (máximo 100 MB por archivo) y revisarlos antes de guardar.
       </p>
 
       <!-- VISTA PREVIA -->
       <div class="fotos-galeria" *ngIf="fotosSeleccionadas.length > 0">
         <div class="foto-preview" *ngFor="let foto of fotosSeleccionadas; let i = index">
-          <img [src]="foto.url" [alt]="foto.nombre">
+          <video *ngIf="foto.esVideo" [src]="foto.url" controls playsinline></video><img *ngIf="!foto.esVideo" [src]="foto.url" [alt]="foto.nombre">
 
           <div class="foto-preview-pie">
             <span>{{ foto.nombre }}</span>

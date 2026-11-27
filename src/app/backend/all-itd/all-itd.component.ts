@@ -460,7 +460,7 @@ export class AllItdComponent implements OnInit {
     if (ventana.document.readyState === 'complete') imprimir(); else ventana.onload = imprimir;
   }
 
-  generarPDF(itd: Itd): void {
+  async generarPDF(itd: Itd): Promise<void> {
     const ventana = window.open('', '_blank');
 
     if (!ventana) {
@@ -505,9 +505,10 @@ export class AllItdComponent implements OnInit {
       </tr>
     `).join('');
 
-    const fotos = (itd.fotos || []).filter(url =>
+    const fotosOriginales = (itd.fotos || []).filter(url =>
       typeof url === 'string' && /^https?:\/\//i.test(url) && !this.esVideo(url)
     );
+    const fotos = await this.prepararImagenesPdf(fotosOriginales);
 
     const crearGaleria = (imagenes: string[]): string => {
       if (!imagenes.length) return '';

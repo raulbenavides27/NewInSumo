@@ -183,17 +183,29 @@
   border-top: 1px dashed #d5deeb;
 }
 
-.col-folio { width: 8%; }
+/* Anchos proporcionales: se prioriza el espacio según el largo del encabezado
+   y el contenido habitual de cada columna. La suma equivale al 100%. */
+.col-folio { width: 7%; }
 .col-fecha { width: 8%; }
-.col-fecha-recepcion { width: 10%; }
-.col-seller { width: 10%; }
-.col-documento { width: 8%; }
-.col-oc { width: 8%; }
-.col-productos { width: 14%; }
-.col-observacion { width: 13%; }
-.col-compensacion { width: 8%; }
+.col-fecha-recepcion { width: 11%; }
+.col-seller { width: 9%; }
+.col-documento { width: 7%; }
+.col-oc { width: 7%; }
+.col-productos { width: 13%; }
+.col-observacion { width: 12%; }
+.col-compensacion { width: 12%; }
 .col-estado { width: 8%; }
-.col-acciones { width: 8%; }
+.col-acciones { width: 6%; }
+
+.tabla-itd th.col-folio,
+.tabla-itd td.col-folio {
+  white-space: nowrap;
+}
+
+.tabla-itd th.col-compensacion {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
 
 .celda-fecha {
   white-space: nowrap;

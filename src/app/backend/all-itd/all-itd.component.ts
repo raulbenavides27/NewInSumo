@@ -420,7 +420,7 @@ export class AllItdComponent implements OnInit {
     return Promise.all(urls.map(url => this.optimizarImagenParaPdf(url)));
   }
 
-  private generarPDFMultiple(registros: ItdListado[]): void {
+  private async generarPDFMultiple(registros: ItdListado[]): Promise<void> {
     const ventana = window.open('', '_blank');
     if (!ventana) {
       alert('El navegador bloqueó la ventana del informe. Permite las ventanas emergentes e inténtalo nuevamente.');
@@ -434,12 +434,12 @@ export class AllItdComponent implements OnInit {
       const partes = valor.split('-');
       return partes.length === 3 ? partes[2] + '-' + partes[1] + '-' + partes[0] : escapar(valor);
     };
-    const paginas = registros.map((itd, indice) => {
+    const paginas = await Promise.all(registros.map(async (itd, indice) => {
       const filas = (itd.productos || []).map(producto =>
         '<tr><td>' + escapar(producto.sku) + '</td><td>' + escapar(producto.descripcion) + '</td><td>' + escapar(producto.cantidad) + '</td><td>' + escapar(itd.documento) + '</td><td>' + escapar(itd.ocPedido) + '</td><td>' + escapar(itd.numeroSeguimiento) + '</td><td>' + escapar(producto.estadoProducto) + '</td></tr>'
       ).join('');
       const fotosOriginales = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0) && !this.esVideo(url));
-      const fotos = fotosOriginales;
+      const fotos = await this.prepararImagenesPdf(fotosOriginales);
       const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
       return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
         '<header class="empresa-header"><div class="identidad-empresa"><img src="assets/imgs/logo-alcazar.webp" alt="Alcázar"><div><strong>Comercial Coyahue SpA</strong><span>RUT: 78.644.350-4</span><small>Marca: Alcázar</small></div></div><div class="datos-itd"><span>' + escapar(this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL')) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div></header>' +
@@ -449,9 +449,9 @@ export class AllItdComponent implements OnInit {
         '<p>Esto corresponde a una devolución realizada por: <strong>' + escapar(itd.sellerNombre) + '</strong></p>' +
         '<h2>Detalle del estado</h2><p class="detalle">' + escapar(itd.detalleEstado || 'Sin detalle informado.') + '</p>' + galeria +
         '<div class="firma"><strong>' + escapar(itd.responsableCreacion) + '</strong><span>' + escapar(itd.cargoCreacion) + '</span></div></section>';
-    }).join('');
+    }));
     ventana.document.open();
-    ventana.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><base href="' + window.location.origin + '/"><title>Informes ITD seleccionados</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font:10pt Arial;color:#171717;line-height:1.35}.empresa-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:9px;border-bottom:1px solid #d8d8d8;margin-bottom:14px}.identidad-empresa{display:flex;align-items:center;gap:10px}.identidad-empresa img{display:block;width:105px;max-height:28px;object-fit:contain}.identidad-empresa strong,.identidad-empresa span,.identidad-empresa small{display:block}.identidad-empresa strong{font-size:10pt}.identidad-empresa span,.identidad-empresa small{font-size:8pt;color:#555}.datos-itd{text-align:right;font-size:9pt}.datos-itd span,.datos-itd strong{display:block}.informe{min-height:260mm}.salto-pagina{break-before:page;page-break-before:always}h1{font-size:17pt;margin:16px 0 12px}h2{font-size:12pt;margin-top:18px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td{border:1px solid #555;padding:6px 5px;text-align:left;overflow-wrap:anywhere;vertical-align:top}th{background:#eee}.detalle{white-space:pre-wrap;overflow-wrap:anywhere}.galeria{display:grid;grid-template-columns:repeat(2,1fr);gap:8mm;margin-top:10mm}.galeria figure{height:66mm;margin:0;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;padding:2mm;break-inside:avoid}.galeria img{max-width:100%;max-height:100%;object-fit:contain}.firma{margin-top:22mm;text-align:right}.firma strong,.firma span{display:block}tr{break-inside:avoid}</style></head><body>' + paginas + '</body></html>');
+    ventana.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><base href="' + window.location.origin + '/"><title>Informes ITD seleccionados</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{font:10pt Arial;color:#171717;line-height:1.35}.empresa-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:9px;border-bottom:1px solid #d8d8d8;margin-bottom:14px}.identidad-empresa{display:flex;align-items:center;gap:10px}.identidad-empresa img{display:block;width:105px;max-height:28px;object-fit:contain}.identidad-empresa strong,.identidad-empresa span,.identidad-empresa small{display:block}.identidad-empresa strong{font-size:10pt}.identidad-empresa span,.identidad-empresa small{font-size:8pt;color:#555}.datos-itd{text-align:right;font-size:9pt}.datos-itd span,.datos-itd strong{display:block}.informe{min-height:260mm}.salto-pagina{break-before:page;page-break-before:always}h1{font-size:17pt;margin:16px 0 12px}h2{font-size:12pt;margin-top:18px}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td{border:1px solid #555;padding:6px 5px;text-align:left;overflow-wrap:anywhere;vertical-align:top}th{background:#eee}.detalle{white-space:pre-wrap;overflow-wrap:anywhere}.galeria{display:grid;grid-template-columns:repeat(2,1fr);gap:8mm;margin-top:10mm}.galeria figure{height:66mm;margin:0;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;padding:2mm;break-inside:avoid}.galeria img{max-width:100%;max-height:100%;object-fit:contain}.firma{margin-top:22mm;text-align:right}.firma strong,.firma span{display:block}tr{break-inside:avoid}</style></head><body>' + paginas.join('') + '</body></html>');
     ventana.document.close();
     const imprimir = (): void => {
       const imagenes = Array.from(ventana.document.images);

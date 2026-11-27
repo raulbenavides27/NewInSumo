@@ -394,7 +394,7 @@ export class AllItdComponent implements OnInit {
       const filas = (itd.productos || []).map(producto =>
         '<tr><td>' + escapar(producto.sku) + '</td><td>' + escapar(producto.descripcion) + '</td><td>' + escapar(producto.cantidad) + '</td><td>' + escapar(itd.documento) + '</td><td>' + escapar(itd.ocPedido) + '</td><td>' + escapar(itd.numeroSeguimiento) + '</td><td>' + escapar(producto.estadoProducto) + '</td></tr>'
       ).join('');
-      const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0));
+      const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0) && !this.esVideo(url));
       const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
       return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
         '<header class="empresa-header"><div class="identidad-empresa"><img src="assets/imgs/logo-alcazar.webp" alt="Alcázar"><div><strong>Comercial Coyahue SpA</strong><span>RUT: 78.644.350-4</span><small>Marca: Alcázar</small></div></div><div class="datos-itd"><span>' + escapar(this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL')) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div></header>' +
@@ -461,7 +461,7 @@ export class AllItdComponent implements OnInit {
     `).join('');
 
     const fotos = (itd.fotos || []).filter(url =>
-      typeof url === 'string' && /^https?:\/\//i.test(url)
+      typeof url === 'string' && /^https?:\/\//i.test(url) && !this.esVideo(url)
     );
 
     const crearGaleria = (imagenes: string[]): string => {

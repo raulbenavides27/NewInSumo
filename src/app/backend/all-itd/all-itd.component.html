@@ -63,17 +63,17 @@
                 aria-label="Seleccionar o desmarcar todos los ITD visibles">
               </ion-checkbox>
             </th>
-            <th>Folio</th>
-            <th>Fecha ITD</th>
-            <th>Fecha de recepción</th>
-            <th translate="no">Seller</th>
-            <th>Documento</th>
-            <th>OC / Pedido</th>
-            <th>Productos</th>
-            <th>Obs. gestión</th>
-            <th>Compensación</th>
-            <th>Estado de gestión</th>
-            <th>Acciones</th>
+            <th class="col-folio">Folio</th>
+            <th class="col-fecha">Fecha ITD</th>
+            <th class="col-fecha-recepcion">Fecha de recepción</th>
+            <th class="col-seller" translate="no">Seller</th>
+            <th class="col-documento">Documento</th>
+            <th class="col-oc">OC / Pedido</th>
+            <th class="col-productos">Productos</th>
+            <th class="col-observacion">Obs. gestión</th>
+            <th class="col-compensacion">Compensación</th>
+            <th class="col-estado">Estado de gestión</th>
+            <th class="col-acciones">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -84,23 +84,23 @@
                 <strong>ITD {{ itd.folio | number:'2.0-0' }}</strong>
                 <small>{{ itd.responsableCreacion }}</small>
               </td>
-              <td class="celda-fecha">{{ fechaItd(itd) }}</td>
-              <td class="celda-fecha">{{ fechaRecepcion(itd) }}</td>
-              <td class="celda-seller" translate="no">
+              <td class="celda-fecha col-fecha">{{ fechaItd(itd) }}</td>
+              <td class="celda-fecha col-fecha-recepcion">{{ fechaRecepcion(itd) }}</td>
+              <td class="celda-seller col-seller" translate="no">
                 <strong>{{ itd.sellerNombre }}</strong>
                 <small>Seguimiento: {{ itd.numeroSeguimiento || '—' }}</small>
               </td>
-              <td>{{ itd.documento || '—' }}</td>
-              <td>{{ itd.ocPedido || '—' }}</td>
-              <td class="celda-productos">
+              <td class="col-documento">{{ itd.documento || '—' }}</td>
+              <td class="col-oc">{{ itd.ocPedido || '—' }}</td>
+              <td class="celda-productos col-productos">
                 <div *ngFor="let producto of itd.productos">
                   <strong>{{ producto.descripcion || 'Sin descripción' }}</strong>
                   <small>SKU {{ producto.sku || '—' }} · Cant. {{ producto.cantidad }}</small>
                 </div>
               </td>
-              <td class="celda-observacion">{{ itd.ultimaGestion?.observacion || 'Sin observaciones' }}</td>
-              <td class="celda-compensacion">{{ itd.ultimaGestion?.compensacion ?? '—' }}<span *ngIf="itd.ultimaGestion">%</span></td>
-              <td>
+              <td class="celda-observacion col-observacion">{{ itd.ultimaGestion?.observacion || 'Sin observaciones' }}</td>
+              <td class="celda-compensacion col-compensacion">{{ itd.ultimaGestion?.compensacion ?? '—' }}<span *ngIf="itd.ultimaGestion">%</span></td>
+              <td class="col-estado">
                 <ion-badge [color]="estadoGestion(itd) === 'CERRADO' ? 'success' : 'warning'">
                   {{ estadoGestion(itd) === 'CERRADO' ? 'Cerrado' : 'Abierto' }}
                 </ion-badge>

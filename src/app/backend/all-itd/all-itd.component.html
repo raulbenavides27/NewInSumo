@@ -63,9 +63,12 @@
                 aria-label="Seleccionar o desmarcar todos los ITD visibles">
               </ion-checkbox>
             </th>
-            <th>Folio / Fecha</th>
-            <th>Seller</th>
-            <th>Documento / OC</th>
+            <th>Folio</th>
+            <th>Fecha ITD</th>
+            <th>Fecha de recepción</th>
+            <th translate="no">Seller</th>
+            <th>Documento</th>
+            <th>OC / Pedido</th>
             <th>Productos</th>
             <th>Obs. gestión</th>
             <th>Compensación</th>
@@ -79,18 +82,16 @@
               <td *ngIf="modoSeleccion"><ion-checkbox [checked]="estaSeleccionado(itd)" (ionChange)="cambiarSeleccion(itd, $any($event).detail.checked)"></ion-checkbox></td>
               <td class="celda-folio">
                 <strong>ITD {{ itd.folio | number:'2.0-0' }}</strong>
-                <span>Fecha ITD: {{ fechaItd(itd) }}</span>
-                <small>Recepción: {{ fechaRecepcion(itd) }}</small>
                 <small>{{ itd.responsableCreacion }}</small>
               </td>
-              <td>
+              <td class="celda-fecha">{{ fechaItd(itd) }}</td>
+              <td class="celda-fecha">{{ fechaRecepcion(itd) }}</td>
+              <td class="celda-seller" translate="no">
                 <strong>{{ itd.sellerNombre }}</strong>
                 <small>Seguimiento: {{ itd.numeroSeguimiento || '—' }}</small>
               </td>
-              <td>
-                <span>Doc.: {{ itd.documento || '—' }}</span>
-                <span>OC: {{ itd.ocPedido || '—' }}</span>
-              </td>
+              <td>{{ itd.documento || '—' }}</td>
+              <td>{{ itd.ocPedido || '—' }}</td>
               <td class="celda-productos">
                 <div *ngFor="let producto of itd.productos">
                   <strong>{{ producto.descripcion || 'Sin descripción' }}</strong>
@@ -118,7 +119,7 @@
               </td>
             </tr>
             <tr class="fila-edicion" *ngIf="editandoItdId === itd.id">
-              <td [attr.colspan]="modoSeleccion ? 9 : 8">
+              <td [attr.colspan]="modoSeleccion ? 11 : 10">
                 <ng-container *ngTemplateOutlet="editorGestion; context: {$implicit: itd}"></ng-container>
               </td>
             </tr>

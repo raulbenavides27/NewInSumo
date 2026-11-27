@@ -122,16 +122,19 @@
 
 .tabla-itd {
   width: 100%;
-  min-width: 1320px;
+  width: 100%;
+  min-width: 1280px;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .tabla-itd th {
-  padding: 12px 10px;
+  padding: 11px 9px;
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: break-word;
   color: #263750;
   background: #eaf0f8;
   font-size: 13px;
@@ -140,8 +143,9 @@
 }
 
 .tabla-itd td {
-  padding: 12px 10px;
+  padding: 11px 9px;
   vertical-align: middle;
+  overflow-wrap: anywhere;
   border-bottom: 1px solid #e7edf5;
   color: #263750;
   line-height: 1.45;
@@ -179,26 +183,35 @@
   border-top: 1px dashed #d5deeb;
 }
 
+.col-folio { width: 8%; }
+.col-fecha { width: 8%; }
+.col-fecha-recepcion { width: 10%; }
+.col-seller { width: 10%; }
+.col-documento { width: 8%; }
+.col-oc { width: 8%; }
+.col-productos { width: 14%; }
+.col-observacion { width: 13%; }
+.col-compensacion { width: 8%; }
+.col-estado { width: 8%; }
+.col-acciones { width: 8%; }
+
 .celda-fecha {
-  min-width: 105px;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .celda-seller {
-  min-width: 115px;
+  overflow-wrap: anywhere;
 }
 
 .celda-observacion {
-  min-width: 160px;
-  max-width: 270px;
+  max-width: none;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   color: #263750 !important;
 }
 
 .celda-compensacion {
-  min-width: 95px;
   color: #172943 !important;
   font-size: 15px;
   font-weight: 750;
@@ -220,8 +233,8 @@
 }
 
 .celda-acciones {
-  width: 104px;
-  min-width: 104px;
+  width: 8%;
+  min-width: 0;
   padding: 8px 6px !important;
   white-space: nowrap;
 }
@@ -346,7 +359,7 @@
   }
 
   .tabla-itd {
-    min-width: 1320px;
+    min-width: 1280px;
   }
 }
 

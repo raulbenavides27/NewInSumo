@@ -132,7 +132,7 @@ export class AdministracionComponent implements OnInit, OnDestroy {
         await this.firestore.updateDoc<RolPermisos>(
           { permisos: configuracion.permisos, actualizadoEn: configuracion.actualizadoEn },
           'roles',
-          this.rolSeleccionado
+          existente.id || this.rolSeleccionado
         );
       } else {
         await this.firestore.createDoc<RolPermisos>(

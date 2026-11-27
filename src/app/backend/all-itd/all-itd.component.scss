@@ -122,14 +122,14 @@
 
 .tabla-itd {
   width: 100%;
-  min-width: 1120px;
+  min-width: 1320px;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 14px;
 }
 
 .tabla-itd th {
-  padding: 16px 14px;
+  padding: 12px 10px;
   text-align: left;
   white-space: nowrap;
   color: #263750;
@@ -140,7 +140,7 @@
 }
 
 .tabla-itd td {
-  padding: 16px 14px;
+  padding: 12px 10px;
   vertical-align: middle;
   border-bottom: 1px solid #e7edf5;
   color: #263750;
@@ -179,8 +179,18 @@
   border-top: 1px dashed #d5deeb;
 }
 
+.celda-fecha {
+  min-width: 105px;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.celda-seller {
+  min-width: 115px;
+}
+
 .celda-observacion {
-  min-width: 180px;
+  min-width: 160px;
   max-width: 270px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -210,15 +220,23 @@
 }
 
 .celda-acciones {
-  min-width: 160px;
+  width: 104px;
+  min-width: 104px;
+  padding: 8px 6px !important;
   white-space: nowrap;
 }
 
 .celda-acciones ion-button {
+  display: flex;
+  width: 100%;
+  min-height: 32px;
   margin: 2px 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  --border-radius: 8px;
+  text-align: left;
+  --padding-start: 5px;
+  --padding-end: 5px;
+  --border-radius: 7px;
 }
 
 .fila-edicion > td {
@@ -328,7 +346,7 @@
   }
 
   .tabla-itd {
-    min-width: 1080px;
+    min-width: 1320px;
   }
 }
 

@@ -376,6 +376,50 @@ export class AllItdComponent implements OnInit {
     this.generarPDFMultiple(registros);
   }
 
+  private async optimizarImagenParaPdf(url: string): Promise<string> {
+    try {
+      const respuesta = await fetch(url);
+      if (!respuesta.ok) return url;
+      const blob = await respuesta.blob();
+      if (!blob.type.startsWith('image/')) return url;
+
+      const imagen = await createImageBitmap(blob);
+      const maxLado = 1600;
+      const escala = Math.min(1, maxLado / Math.max(imagen.width, imagen.height));
+      const ancho = Math.max(1, Math.round(imagen.width * escala));
+      const alto = Math.max(1, Math.round(imagen.height * escala));
+      const canvas = document.createElement('canvas');
+      canvas.width = ancho;
+      canvas.height = alto;
+      const contexto = canvas.getContext('2d');
+      if (!contexto) {
+        imagen.close();
+        return url;
+      }
+      contexto.drawImage(imagen, 0, 0, ancho, alto);
+      imagen.close();
+
+      const comprimido = await new Promise<Blob | null>(resolve =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.76)
+      );
+      if (!comprimido || comprimido.size >= blob.size) return url;
+
+      return await new Promise<string>((resolve, reject) => {
+        const lector = new FileReader();
+        lector.onload = () => resolve(String(lector.result));
+        lector.onerror = () => reject(lector.error);
+        lector.readAsDataURL(comprimido);
+      });
+    } catch (error) {
+      console.warn('No se pudo optimizar una imagen para el PDF; se usará el original:', error);
+      return url;
+    }
+  }
+
+  private async prepararImagenesPdf(urls: string[]): Promise<string[]> {
+    return Promise.all(urls.map(url => this.optimizarImagenParaPdf(url)));
+  }
+
   private generarPDFMultiple(registros: ItdListado[]): void {
     const ventana = window.open('', '_blank');
     if (!ventana) {
@@ -394,7 +438,8 @@ export class AllItdComponent implements OnInit {
       const filas = (itd.productos || []).map(producto =>
         '<tr><td>' + escapar(producto.sku) + '</td><td>' + escapar(producto.descripcion) + '</td><td>' + escapar(producto.cantidad) + '</td><td>' + escapar(itd.documento) + '</td><td>' + escapar(itd.ocPedido) + '</td><td>' + escapar(itd.numeroSeguimiento) + '</td><td>' + escapar(producto.estadoProducto) + '</td></tr>'
       ).join('');
-      const fotos = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0) && !this.esVideo(url));
+      const fotosOriginales = (itd.fotos || []).filter(url => typeof url === 'string' && (url.indexOf('https://') === 0 || url.indexOf('http://') === 0) && !this.esVideo(url));
+      const fotos = fotosOriginales;
       const galeria = fotos.length ? '<section class="galeria">' + fotos.map((url, i) => '<figure><img src="' + escapar(url) + '" alt="Fotografía ' + (i + 1) + '"></figure>').join('') + '</section>' : '';
       return '<section class="informe ' + (indice ? 'salto-pagina' : '') + '">' +
         '<header class="empresa-header"><div class="identidad-empresa"><img src="assets/imgs/logo-alcazar.webp" alt="Alcázar"><div><strong>Comercial Coyahue SpA</strong><span>RUT: 78.644.350-4</span><small>Marca: Alcázar</small></div></div><div class="datos-itd"><span>' + escapar(this.convertirFecha(itd.fechaCreacion).toLocaleDateString('es-CL')) + '</span><strong>Folio: ' + escapar(String(itd.folio).padStart(4, '0')) + '</strong></div></header>' +

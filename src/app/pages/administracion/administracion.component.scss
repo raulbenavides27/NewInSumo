@@ -10,3 +10,146 @@ ion-card {
 ion-item h2 {
   font-weight: 600;
 }
+
+ion-item {
+  --min-height: 58px;
+}
+
+ion-item ion-label[position="floating"] {
+  color: #475569;
+  font-size: 14px;
+}
+
+.permissions-card {
+  margin-bottom: 32px;
+}
+
+.permission-section {
+  padding-top: 18px;
+}
+
+.selector-item {
+  margin: 8px 0 12px;
+  --padding-start: 0;
+}
+
+.section-hint {
+  margin: 12px 0 18px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.permission-table {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.permission-row {
+  display: grid;
+  grid-template-columns: minmax(125px, 1.5fr) repeat(4, minmax(58px, 1fr));
+  align-items: center;
+  gap: 8px;
+  min-width: 430px;
+  padding: 13px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.permission-row:last-child {
+  border-bottom: 0;
+}
+
+.permission-row > :first-child {
+  text-align: left;
+}
+
+.permission-header {
+  color: #475569;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.permission-row strong {
+  color: #1e293b;
+  font-size: 13px;
+}
+
+.permission-row ion-checkbox {
+  justify-self: center;
+  --size: 19px;
+  --checkbox-background-checked: #0043ce;
+  --border-color-checked: #0043ce;
+}
+
+.save-permissions {
+  margin-top: 20px;
+  --background: #0043ce;
+  --border-radius: 9px;
+  font-weight: 600;
+}
+
+.user-permission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.user-permission-row {
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.user-permission-row > strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.user-permission-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.user-permission-action {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.user-permission-action ion-label {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.user-permission-action ion-select {
+  width: 100%;
+  max-width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  color: #1e293b;
+  font-size: 13px;
+}
+
+@media (max-width: 576px) {
+  ion-content {
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+
+  .user-permission-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-row {
+    gap: 5px;
+    padding: 12px 8px;
+  }
+}

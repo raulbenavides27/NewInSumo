@@ -93,7 +93,7 @@
           <section *ngIf="vistaPermisos === 'rol'" class="permission-section">
             <ion-item class="selector-item">
               <ion-label position="floating">Seleccionar rol</ion-label>
-              <ion-select [value]="rolSeleccionado" (ionChange)="cargarPermisosRol($event.detail.value)" interface="popover">
+              <ion-select [value]="rolSeleccionado" (ionChange)="cargarPermisosRol($any($event).detail.value)" interface="popover">
                 <ion-select-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</ion-select-option>
               </ion-select>
             </ion-item>
@@ -109,7 +109,7 @@
                 <ion-checkbox
                   *ngFor="let accion of acciones"
                   [checked]="permisosRolEditando[modulo.key][accion.key]"
-                  (ionChange)="cambiarPermisoRol(modulo.key, accion.key, $event.detail.checked)">
+                  (ionChange)="cambiarPermisoRol(modulo.key, accion.key, $any($event).detail.checked)">
                 </ion-checkbox>
               </div>
             </div>

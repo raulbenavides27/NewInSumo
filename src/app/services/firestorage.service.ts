@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { firstValueFrom } from 'rxjs';
-import { last, switchMap } from 'rxjs/operators';
+import { last, switchMap, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -17,12 +17,11 @@ export class FirestorageService {
     try {
       return await firstValueFrom(
         task.snapshotChanges().pipe(
-          switchMap(snapshot => {
+          tap(snapshot => {
             if (snapshot && onProgress) {
               const total = snapshot.totalBytes || file.size || 1;
               onProgress(Math.round((snapshot.bytesTransferred / total) * 100));
             }
-            return [snapshot];
           }),
           last(),
           switchMap(() => ref.getDownloadURL())

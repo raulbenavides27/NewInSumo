@@ -121,7 +121,7 @@
           <section *ngIf="vistaPermisos === 'usuario'" class="permission-section">
             <ion-item class="selector-item">
               <ion-label position="floating">Seleccionar usuario</ion-label>
-              <ion-select [value]="usuarioPermisosUid" (ionChange)="cargarPermisosUsuario($event.detail.value)" interface="popover" placeholder="Elige un usuario">
+              <ion-select [value]="usuarioPermisosUid" (ionChange)="cargarPermisosUsuario($any($event).detail.value)" interface="popover" placeholder="Elige un usuario">
                 <ion-select-option *ngFor="let usuario of usuarios" [value]="usuario.uid">
                   {{ usuario.nombre || usuario.email }} · {{ usuario.rol }}
                 </ion-select-option>
@@ -138,7 +138,7 @@
                       <ion-label>{{ accion.label }}</ion-label>
                       <ion-select
                         [value]="obtenerPermisoUsuario(modulo.key, accion.key)"
-                        (ionChange)="cambiarPermisoUsuario(modulo.key, accion.key, $event.detail.value)"
+                        (ionChange)="cambiarPermisoUsuario(modulo.key, accion.key, $any($event).detail.value)"
                         interface="popover">
                         <ion-select-option value="HEREDAR">Heredar</ion-select-option>
                         <ion-select-option value="PERMITIR">Permitir</ion-select-option>

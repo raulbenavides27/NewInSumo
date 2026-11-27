@@ -470,3 +470,62 @@ ion-button::part(native) {
     white-space: normal;
   }
 }
+
+
+/* ===== PROGRESO DE GUARDADO ===== */
+.progreso-operacion {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0 16px 12px;
+  padding: 14px 16px;
+  border: 1px solid #cbd9ee;
+  border-radius: 12px;
+  background: #f4f8ff;
+  box-shadow: 0 4px 14px rgba(20, 50, 90, .08);
+}
+
+.progreso-operacion-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #17345f;
+}
+
+.progreso-operacion-cabecera ion-spinner {
+  width: 21px;
+  height: 21px;
+  flex: 0 0 auto;
+}
+
+.progreso-operacion-cabecera strong {
+  flex: 1;
+  font-size: 14px;
+}
+
+.progreso-operacion-cabecera span {
+  font-size: 14px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.progreso-operacion ion-progress-bar {
+  height: 9px;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progreso-operacion small {
+  display: block;
+  margin-top: 8px;
+  color: #58677d;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .progreso-operacion {
+    margin: 0 8px 10px;
+    padding: 12px;
+  }
+}

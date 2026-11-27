@@ -9,7 +9,7 @@ import { last, switchMap } from 'rxjs/operators';
 export class FirestorageService {
   constructor(public FireStorage: AngularFireStorage) {}
 
-  async uploadImage(file: File, path: string, nombre: string): Promise<string> {
+  async uploadImage(file: File, path: string, nombre: string, onProgress?: (porcentaje: number) => void): Promise<string> {
     const filePath = `${path}/${nombre}`;
     const ref = this.FireStorage.ref(filePath);
     const task = ref.put(file);
@@ -17,6 +17,13 @@ export class FirestorageService {
     try {
       return await firstValueFrom(
         task.snapshotChanges().pipe(
+          switchMap(snapshot => {
+            if (snapshot && onProgress) {
+              const total = snapshot.totalBytes || file.size || 1;
+              onProgress(Math.round((snapshot.bytesTransferred / total) * 100));
+            }
+            return [snapshot];
+          }),
           last(),
           switchMap(() => ref.getDownloadURL())
         )

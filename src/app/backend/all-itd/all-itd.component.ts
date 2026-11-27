@@ -180,7 +180,7 @@ export class AllItdComponent implements OnInit {
 
   esVideo(referencia: string): boolean {
     const ruta = decodeURIComponent((referencia || '').split('?')[0]).toLowerCase();
-    return /\\.(mp4|webm|mov|m4v|ogg|3gp)$/.test(ruta);
+    return /\.(mp4|webm|mov|m4v|ogg|3gp)$/.test(ruta);
   }
 
   estadoGestion(itd: ItdListado): EstadoGestionItd {

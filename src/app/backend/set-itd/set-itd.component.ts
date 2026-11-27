@@ -33,6 +33,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
   fotosExistentes: string[] = [];
   fotosConError = new Set<string>();
   cargando = false;
+  progresoCarga = 0;
+  estadoOperacion = '';
   modoEdicion = false;
   motivoEdicion = '';
   private uidActual = '';
@@ -323,6 +325,34 @@ export class SetItdComponent implements OnInit, OnDestroy {
     return fecha instanceof Date ? fecha : new Date(fecha || 0);
   }
 
+  private async subirEvidencias(itdId: string): Promise<string[]> {
+    const archivos = this.fotosSeleccionadas;
+    if (!archivos.length) return [];
+
+    const progresoPorArchivo = archivos.map(() => 0);
+    const totalBytes = archivos.reduce((total, foto) => total + foto.archivo.size, 0) || 1;
+    this.progresoCarga = 0;
+    this.estadoOperacion = 'Subiendo evidencias...';
+
+    const urls = await Promise.all(archivos.map(async (foto, index) => {
+      const nombre = Date.now() + '_' + index + '_' + foto.nombre.replace(/[^a-zA-Z0-9._-]/g, '_');
+      return this.firestorageService.uploadImage(
+        foto.archivo,
+        'itds/' + itdId + '/fotos',
+        nombre,
+        porcentaje => {
+          progresoPorArchivo[index] = porcentaje;
+          const bytesCompletados = archivos.reduce((total, archivo, i) =>
+            total + archivo.archivo.size * progresoPorArchivo[i] / 100, 0);
+          this.progresoCarga = Math.min(85, Math.round(bytesCompletados / totalBytes * 85));
+        }
+      );
+    }));
+
+    this.progresoCarga = 88;
+    return urls;
+  }
+
   private async guardarEdicion(): Promise<void> {
     const motivo = this.motivoEdicion.trim();
     if (!motivo) { alert('Debes indicar el motivo de la corrección.'); return; }
@@ -336,10 +366,7 @@ export class SetItdComponent implements OnInit, OnDestroy {
       await this.router.navigate(['/all-itd']);
       return;
     }
-    const fotosNuevas = await Promise.all(this.fotosSeleccionadas.map((foto, index) => {
-      const nombre = Date.now() + '_' + index + '_' + foto.nombre.replace(/[^a-zA-Z0-9._-]/g, '_');
-      return this.firestorageService.uploadImage(foto.archivo, 'itds/' + this.itd.id + '/fotos', nombre);
-    }));
+    const fotosNuevas = await this.subirEvidencias(this.itd.id);
     const actualizado: Itd = {
       ...this.itd,
       id: original.id,
@@ -357,6 +384,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
       const despues = (actualizado as any)[campo];
       if (JSON.stringify(antes) !== JSON.stringify(despues)) cambios[campo] = { antes, despues };
     });
+    this.estadoOperacion = 'Guardando información del ITD...';
+    this.progresoCarga = 94;
     await this.firestoreService.updateDoc<Itd>(actualizado, 'itds', original.id);
     const fotosEliminadas = (original.fotos || []).filter(url => !this.fotosExistentes.includes(url));
     for (const url of fotosEliminadas) {
@@ -369,6 +398,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
       fechaModificacion: new Date(), motivo, uidUsuario: this.uidActual,
       usuario: this.nombreUsuarioActual, cargo: this.cargoUsuarioActual, rol: this.rolUsuarioActual, cambios
     }, 'historial_ediciones_itd', this.firestoreService.getId());
+    this.progresoCarga = 100;
+    this.estadoOperacion = '¡Actualización completada!';
     alert('ITD ' + String(original.folio).padStart(2, '0') + ' actualizado correctamente.');
     this.liberarVistasPrevias();
     await this.router.navigate(['/all-itd']);
@@ -381,9 +412,11 @@ export class SetItdComponent implements OnInit, OnDestroy {
     if (this.modoEdicion) {
       if (this.cargando) return;
       this.cargando = true;
+      this.progresoCarga = 3;
+      this.estadoOperacion = 'Preparando actualización...';
       try { await this.guardarEdicion(); }
       catch (error) { console.error('Error al actualizar ITD:', error); alert('No fue posible actualizar el ITD.'); }
-      finally { this.cargando = false; }
+      finally { this.cargando = false; this.estadoOperacion = ''; this.progresoCarga = 0; }
       return;
     }
 
@@ -392,25 +425,15 @@ export class SetItdComponent implements OnInit, OnDestroy {
     }
 
     this.cargando = true;
+    this.progresoCarga = 3;
+    this.estadoOperacion = 'Preparando registro...';
 
     try {
       await this.cargarSiguienteFolio();
 
       const id = this.firestoreService.getId();
 
-      // Primero se suben las fotografías a Storage y se obtienen sus URLs.
-      const fotosUrls: string[] = await Promise.all(
-        this.fotosSeleccionadas.map((foto, index) => {
-          const nombreArchivo =
-            `${Date.now()}_${index}_${foto.nombre.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-
-          return this.firestorageService.uploadImage(
-            foto.archivo,
-            `itds/${id}/fotos`,
-            nombreArchivo
-          );
-        })
-      );
+      const fotosUrls: string[] = await this.subirEvidencias(id);
 
       const registro: Itd = {
         ...this.itd,
@@ -421,7 +444,11 @@ export class SetItdComponent implements OnInit, OnDestroy {
         fotos: fotosUrls
       };
 
+      this.estadoOperacion = 'Guardando información del ITD...';
+      this.progresoCarga = 95;
       await this.firestoreService.createDoc(registro, 'itds', id);
+      this.progresoCarga = 100;
+      this.estadoOperacion = '¡ITD creado correctamente!';
 
       alert(
         `ITD ${String(registro.folio).padStart(2, '0')} registrado correctamente.`
@@ -433,6 +460,8 @@ export class SetItdComponent implements OnInit, OnDestroy {
       alert('No fue posible guardar el ITD o subir sus fotografías. Revise la conexión e inténtelo nuevamente.');
     } finally {
       this.cargando = false;
+      this.estadoOperacion = '';
+      this.progresoCarga = 0;
     }
   }
 

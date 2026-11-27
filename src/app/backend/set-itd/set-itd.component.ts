@@ -303,6 +303,11 @@ export class SetItdComponent implements OnInit, OnDestroy {
     }
   }
 
+  esVideo(referencia: string): boolean {
+    const ruta = decodeURIComponent((referencia || '').split('?')[0]).toLowerCase();
+    return /\\.(mp4|webm|mov|m4v|ogg|3gp)$/.test(ruta);
+  }
+
   marcarFotoNoDisponible(url: string): void {
     this.fotosConError.add(url);
   }
